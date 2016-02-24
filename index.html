@@ -8,12 +8,11 @@ body {
     font-family: lato, Tahoma, sans-serif;
     box-sizing: border-box;
 }
-#results
-.error { color: lightgrey; }
 #error {
     color: red;
     font-weight: bold;
     text-align: center;
+    background-color: pink;
 }
 table {
     width: 100%;
@@ -79,6 +78,7 @@ input.p1, input.p2 {
 }
 </style>
 <div id="resultswrapper"><div id="results"></div></div>
+<div id="error"></div>
 <div class="ui">
     <div class="uibar">
 	<label>År</label><select id="yearselection"></select>
@@ -87,7 +87,6 @@ input.p1, input.p2 {
     </div>
     <div class="uiarea"></div>
 </div>
-<div id="error"></div>
 <script>
 var csv = function() {
     'use strict';
@@ -195,7 +194,7 @@ function addResults(results, scoreboard, exception) {
 
     results.appendChild(h1);
 
-    
+
     var table = document.createElement('table');
     table.id = "results";
     var tablestring = "<tr><th>Namn<th>S<th>V<th>F<th>P";
@@ -331,6 +330,7 @@ function computeResults(round) {
 var yearselect = document.querySelector('#yearselection');
 var roundselect = document.querySelector('#roundselection');
 var divisionselect = document.querySelector('#divisionselection');
+var errorblock = document.querySelector('#error');
 
 var results = document.querySelector('#results');
 var division_name = document.location.hash.substr(1);
@@ -345,31 +345,31 @@ function save() {
     req("save.cgi",
 	function() {
             if (this.readyState == 4 && this.status == 200) {
-		currenthash = this.response[0];
+                if (this.response)
+		    currenthash = this.response[0];
+                else
+	            errorblock.innerHTML = "Kunde inte spara!";
             }
-	}, "division=" + encodeURIComponent(division_name) + "&parent=" + encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(JSON.stringify(round)));
+	}, "division=" + encodeURIComponent(division_name) + "&parent=" +
+           encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(JSON.stringify(round)));
 }
 
 function build_scoreboard() {
     results.innerHTML = "";
-    results.classList.remove("error");
-    document.querySelector('#error').innerHTML = "";
+    errorblock.innerHTML = "";
 
     try {
 	addResults(results, computeResults(round));
     } catch (e) {
-	results.classList.add("error");
-	document.querySelector('#error').innerHTML = e;
+	errorblock.innerHTML = e;
     }
 }
 
 function on_round_changed() {
-    results.classList.remove("error");
-    document.querySelector('#error').innerHTML = "";
+    errorblock.innerHTML = "";
 
     if (round == {}) {
-	document.querySelector('#error').innerHTML = '<i>Empty round</i>';
-	results.classList.add("error");
+	errorblock.innerHTML = '<i>Empty round</i>';
 	return;
     }
 
@@ -462,8 +462,7 @@ function load_round() {
                     currenthash = this.response[0];
                     on_round_changed();
 		} catch (e) {
-	            results.classList.add("error");
-                    document.querySelector('#error').innerHTML = e;
+                    errorblock.innerHTML = e;
                     throw(e);
 		}
             }
@@ -488,7 +487,7 @@ function build_ui_area() {
             tr.appendChild(td);
             table.appendChild(tr);
         }
-        
+
 	var tr = document.createElement('tr');
 	tr.setAttribute("data-game-idx", i);
 
