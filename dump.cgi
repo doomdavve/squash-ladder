@@ -12,8 +12,6 @@ with io.BytesIO() as zip_file:
             for file in files:
                 zip.write(os.path.join(root, file))
 
-    print "Content-type: application/zip"
-    print "Content-disposition: attachment; filename=database.zip"
-    print "\n\n"
-    sys.stdout.flush()
+    sys.stdout.write("Content-type: application/zip\n")
+    sys.stdout.write("Content-disposition: attachment; filename=database.zip\n\n")
     sys.stdout.write(zip_file.getvalue())
