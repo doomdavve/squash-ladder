@@ -1,4 +1,4 @@
-FILES=index.html list.cgi load.cgi save.cgi
+FILES=index.html list.cgi load.cgi save.cgi dump.cgi
 HOST=davve.net
 HOSTDIR=squash/
 publish:
