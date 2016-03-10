@@ -517,6 +517,7 @@ function build_ui_area() {
 	    else
 		round.games[gameidx][3] = parseInt(this.value);
             build_scoreboard();
+            save();
 	};
 	table.appendChild(tr);
     });
