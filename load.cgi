@@ -29,4 +29,4 @@ try:
 
     json.dump([head, parent, date, ip, data], sys.stdout)
 except IOError as e:
-    json.dump(["", "", "", ""], sys.stdout)
+    json.dump([""], sys.stdout)
