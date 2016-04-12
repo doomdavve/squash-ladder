@@ -507,6 +507,14 @@ function build_ui_area() {
 
 	tr.innerHTML = tablestring;
 
+        tr.querySelector('input.p1').onfocus = function () {
+            this.setSelectionRange(0, this.value.length);
+        };
+
+        tr.querySelector('input.p2').onfocus = function () {
+            this.setSelectionRange(0, this.value.length);
+        };
+
 	tr.querySelector('input.p1').onchange = function () {
             var gameidx = this.parentNode.parentNode.getAttribute("data-game-idx");
 	    if (this.value == 'W')
