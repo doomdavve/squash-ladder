@@ -1,19 +1,21 @@
 #!/usr/bin/python
 
 import cgi
-import os
-import hashlib
-import json
-import sys
 import datetime
 import gzip
+import hashlib
+import json
+import os
+import re
+import sys
 
 print "Content-type: application/json"
 print "\n\n"
 
 form = cgi.FieldStorage()
 division = form.getvalue('division')
-if (not division):
+
+if (not division or not re.match(r'\d+-r\d+-d\d+', division)):
     division = "test"
 
 parent = "da39a3ee5e6b4b0d3255bfef95601890afd80709" # sha1 for empty string
@@ -31,7 +33,7 @@ try:
 except IOError as e:
     pass
 
-if (parent == assumedparent):
+if (parent == assumedparent and form.getvalue('data')):
     now = datetime.datetime.now().replace(microsecond=0).isoformat()
     data = form.getvalue('data')
     ip = os.environ["REMOTE_ADDR"]
@@ -56,4 +58,3 @@ if (parent == assumedparent):
         json.dump([""], sys.stdout)
 else:
     json.dump([""], sys.stdout)
-
