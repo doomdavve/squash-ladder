@@ -76,9 +76,15 @@ input.p1, input.p2 {
 .uiarea h2 {
     text-align: center;
 }
-footer {
+.dump {
     margin: 1em;
     float: right;
+}
+footer {
+    text-align: center;
+    clear: both;
+    font-size: small;
+    font-style: italic;
 }
 </style>
 <div id="resultswrapper"><div id="results"></div></div>
@@ -90,7 +96,8 @@ footer {
         <label>Division</label><select id="divisionselection"></select>
     </div>
     <div class="uiarea"></div>
-    <footer><a href="dump.cgi" download>Ladda ner databas</a></footer>
+    <div class="dump"><a href="dump.cgi" download>Ladda ner databas</a></div>
+    <footer><br>Ansvarig: <a href="mailto:davve@davve.net">davve@davve.net</a>. Den här sidan har ingen officiell anknytning till Team Göteborg SK.</footer>
 </div>
 <script>
 var csv = function() {
