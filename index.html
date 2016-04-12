@@ -313,7 +313,7 @@ function computeResults(round) {
 
 		if ((name1 == a[0] && name2 == b[0]) ||
                     (name1 == b[0] && name2 == a[0]))
-                    return result2 - result1;
+                    return result1 - result2;
             }
             // No played games between them. What to do?
             console.log("Warning: could not break tie between " + a[0] + " and " + b[0] + " without Math.random()");
