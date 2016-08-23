@@ -74,6 +74,5 @@ for division in divisions:
 
 with open(tmp_state_file, "w") as f:
     json.dump([ known_division_state ], f)
-    print "Sparat."
 
 os.rename(tmp_state_file, state_file)

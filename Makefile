@@ -1,4 +1,4 @@
-FILES=index.html list.cgi load.cgi save.cgi dump.cgi
+FILES=index.html list.cgi load.cgi save.cgi dump.cgi tracker.py
 HOST=davve.net
 HOSTDIR=/opt/squash/
 publish:
