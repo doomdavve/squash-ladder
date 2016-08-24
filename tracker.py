@@ -85,7 +85,7 @@ def walk_changes(division, new, old):
 divisions = os.listdir(os.path.abspath(os.path.join(args.data, "divisions")))
 divisions.sort()
 for division in divisions:
-    f = open(os.path.join("data", "divisions", division), "r")
+    f = open(os.path.abspath(os.path.join(args.data, "divisions", division)), "r")
     head = f.read()
     f.close()
 
