@@ -22,17 +22,44 @@ parser = argparse.ArgumentParser(description='Track changes.')
 parser.add_argument('--data', help="Data directory")
 args = parser.parse_args()
 
-def compare_games(newgames, oldgames):
-    for i, game in enumerate(newgames):
-        if game != oldgames[i]:
-            oldgame = oldgames[i]
-            if (oldgame[2] == 0 and oldgame[3] == 0):
-                print "Ny: {} vs {}: {} - {}".format(game[0], game[1], game[2], game[3])
-            else:
-                print "Uppdaterad: {} vs {}: {} - {}".format(game[0], game[1], game[2], game[3])
-                print "            {} vs {}: {} - {}".format(oldgame[0], oldgame[1], oldgame[2], oldgame[3])
+def compare_match(division, matches_head, matches_tail):
+    new_matches = []
+    updated_matches = []
 
-def walk_changes(new, old):
+    for i, match in enumerate(matches_head):
+        oldmatch = matches_tail[i]
+        if match != matches_tail[i]:
+            if oldmatch[2] == 0 and oldmatch[3] == 0:
+                new_matches.append([match, oldmatch])
+            else:
+                updated_matches.append([match, oldmatch])
+
+    if len(new_matches) > 0:
+        print "{} i division {}".format(
+            "Ny match" if len(new_matches) == 1 else "Nya matcher",
+            division)
+
+        for diff in new_matches:
+            match = diff[0]
+            oldmatch = diff[1]
+            print "{} - {}: {} - {}""".format(
+                match[0], match[1], match[2], match[3])
+
+    if len(updated_matches) > 0:
+        if len(new_matches) > 0:
+            print
+
+        print "{} i division {}".format(
+            "Uppdaterad match" if len(updated_matches) == 1 else "Uppdaterade matcher",
+            division)
+
+        for diff in updated_matches:
+            match = diff[0]
+            oldmatch = diff[1]
+            print "{} - {}: {} - {} ({} - {})""".format(
+                match[0], match[1], match[2], match[3], oldmatch[2], oldmatch[3])
+
+def walk_changes(division, new, old):
     parent = None
     olddata = None
 
@@ -52,7 +79,7 @@ def walk_changes(new, old):
         oldip = f.readline().strip()
         olddata = json.load(f)
 
-    compare_games(data["games"], olddata["games"])
+    compare_match(division, data["games"], olddata["games"])
 
 # walk all divisions
 divisions = os.listdir(os.path.abspath(os.path.join(args.data, "divisions")))
@@ -65,7 +92,7 @@ for division in divisions:
     if division in known_division_state:
         old = known_division_state[division]
         if (head != old):
-            walk_changes(head, known_division_state[division])
+            walk_changes(division, head, known_division_state[division])
     else:
         print "Ny division {} hittad.".format(division)
 
