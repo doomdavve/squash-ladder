@@ -59,21 +59,27 @@ def compare_match(division, matches_head, matches_tail):
             print "{} - {}: {} - {} ({} - {})""".format(
                 match[0], match[1], match[2], match[3], oldmatch[2], oldmatch[3])
 
+    if len(new_matches) > 0 or len(updated_matches) > 0:
+        print
+
+def object_filename(sha1):
+    return os.path.abspath(os.path.join(args.data, "objects", sha1))
+
 def walk_changes(division, new, old):
     parent = None
     olddata = None
 
-    with gzip.open(os.path.join("data", "objects", new), "r") as f:
+    with gzip.open(object_filename(new), "r") as f:
         parent = f.readline().strip()
         date = f.readline().strip()
         ip = f.readline().strip()
         data = json.load(f)
 
     while parent != old:
-        with gzip.open(os.path.join("data", "objects", parent), "r") as f:
+        with gzip.open(object_filename(parent), "r") as f:
             parent = f.readline().strip()
 
-    with gzip.open(os.path.join("data", "objects", old), "r") as f:
+    with gzip.open(object_filename(old), "r") as f:
         parent = f.readline().strip()
         olddate = f.readline().strip()
         oldip = f.readline().strip()
