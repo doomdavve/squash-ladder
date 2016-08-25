@@ -80,11 +80,23 @@ input.p1, input.p2 {
     margin: 1em;
     float: right;
 }
+.edit {
+    margin: 1em;
+    float: right;
+}
 footer {
     text-align: center;
     clear: both;
     font-size: small;
     font-style: italic;
+}
+.editui {
+    clear: both;
+    display: none;
+}
+.editui textarea {
+    width: 100%;
+    height: 20em;
 }
 </style>
 <div id="resultswrapper"><div id="results"></div></div>
@@ -97,6 +109,11 @@ footer {
     </div>
     <div class="uiarea"></div>
     <div class="dump"><a href="dump.cgi" download>Ladda ner databas</a></div>
+    <div class="edit"><a href="">Editera rådata</a></div>
+    <div class="editui">
+        <textarea></textarea>
+        <input type=submit>
+    </div>
     <footer><br>Ansvarig: <a href="mailto:davve@davve.net">davve@davve.net</a>. Sidan har ingen officiell anknytning till Team Göteborg SK.</footer>
 </div>
 <script>
@@ -470,7 +487,9 @@ function load_round() {
 	function() {
             if (this.readyState == 4 && this.status == 200) {
 		try {
-                    round = JSON.parse(this.response[4]);
+                    var data = this.response[4];
+                    round = JSON.parse(data);
+                    document.querySelector('.editui textarea').value = data;
                     currenthash = this.response[0];
                     on_round_changed();
 		} catch (e) {
@@ -479,6 +498,30 @@ function load_round() {
 		}
             }
 	});
+}
+
+function setup_raw_edit() {
+    var toggle = document.querySelector('.edit a');
+    toggle.onclick = function(event) {
+        document.querySelector('.editui').style.display = 'block';
+        event.preventDefault();
+    }
+
+    document.querySelector('.editui input[type=submit]').onclick = function() {
+        var data = document.querySelector('.editui textarea').value;
+        req("save.cgi",
+	    function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    if (this.response) {
+		        currenthash = this.response[0];
+                        load_round();
+                    }
+                    else
+	                errorblock.innerHTML = "Kunde inte spara!";
+                }
+	    }, "division=" + encodeURIComponent(division_name) + "&parent=" +
+               encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(data));
+    }
 }
 
 function build_ui_area() {
@@ -581,4 +624,6 @@ divisionselect.onchange = update_round;
 updateList();
 if (division_name)
     load_round();
+setup_raw_edit();
+
 </script>
