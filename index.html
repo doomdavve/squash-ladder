@@ -238,10 +238,10 @@ function updateResult(p1result, p2result, p1points, p2points) {
     p1result.nentries++;
     p2result.points += p2points;
     p2result.nentries++;
-    if (p1result > p2result) {
+    if (p1points > p2points) {
 	p2result.lost++;
 	p1result.won++;
-    } else if (p1result < p2result){
+    } else if (p1points < p2points) {
 	p1result.lost++;
 	p2result.won++;
     }
@@ -305,15 +305,10 @@ function computeResults(round) {
             p2points += result2;
 
             // Give an extra point to the winner.
-            if (result1 == 3) {
+            if (result1 == 3)
 		p1points++;
-		result[name2].lost++;
-		result[name1].won++;
-            } else if (result2 == 3) {
+            else if (result2 == 3)
 		p2points++;
-		result[name1].lost++;
-		result[name2].won++;
-            }
 	    updateResult(result[name1], result[name2], p1points, p2points);
 	}
     }
