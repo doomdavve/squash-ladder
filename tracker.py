@@ -21,10 +21,11 @@ if (os.path.exists(state_file)):
         known_division_state = json.load(f)[0]
 
 parser = argparse.ArgumentParser(description='Track changes.')
-parser.add_argument('--data', help="Data directory")
+parser.add_argument('--data', help="Data directory", required=True)
+parser.add_argument('--keys', help="Path to pile with Twitter keys", required=True)
 args = parser.parse_args()
 
-apikeys = json.load(open("twitter-keys"))
+apikeys = json.load(open(args.keys))
 api = twitter.Api(apikeys['consumer_key'],
                   apikeys['consumer_secret'],
                   apikeys['access_token_key'],
