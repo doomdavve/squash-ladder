@@ -220,7 +220,7 @@ function req(url, fun, params) {
     http.send(params);
 }
 
-function addResults(results, scoreboard, exception) {
+function addResults(results, scoreboard) {
     var h1 = document.createElement('h1');
     h1.textContent = scoreboard.shift();
 
@@ -418,7 +418,7 @@ function option(value, selected) {
 }
 
 function parse_division_name(division_name) {
-    var re = /(\d\d\d\d)-r(\d+)-d(\d+)/;
+    var re = /(\d\d\d\d-\d\d\d\d)-(\d\d)-(\d\d)/;
     var found = division_name.match(re);
     if (found)
 	return found.slice(1,4);
@@ -435,7 +435,6 @@ function updateList() {
             if (this.readyState == 4 && this.status == 200) {
 		years = {};
 
-		var existing = false;
 		for (var iter of this.response) {
                     var res = parse_division_name(iter);
                     if (res) {
@@ -447,7 +446,7 @@ function updateList() {
                     }
 		}
 
-		for (var year of Object.keys(years)) {
+		for (var year of Object.keys(years).reverse()) {
                     yearselect.add(option(year, requested_year));
 		}
 
@@ -478,7 +477,7 @@ function update_divisionnr(event) {
 
 function update_round(event) {
     if (event || !division_name) {
-        division_name = yearselect.value + "-r" + roundselect.value + "-d" + divisionselect.value;
+        division_name = yearselect.value + "-" + roundselect.value + "-" + divisionselect.value;
         document.location.hash = division_name;
 
         load_round();

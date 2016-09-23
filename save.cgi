@@ -15,7 +15,7 @@ print "\n\n"
 form = cgi.FieldStorage()
 division = form.getvalue('division')
 
-if (not division or not re.match(r'\d+-r\d+-d\d+', division)):
+if (not division or not re.match(r'\d+-\d+-\d+-\d+', division)): # 2016-2017-02-12
     division = "test"
 
 parent = "da39a3ee5e6b4b0d3255bfef95601890afd80709" # sha1 for empty string
