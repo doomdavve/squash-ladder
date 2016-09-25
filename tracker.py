@@ -1,39 +1,31 @@
 #!/usr/bin/env python
 
 import argparse
-import os
-import json
 import gzip
-import twitter
+import itertools
+import datetime
+import json
+import os
 import re
+import twitter
+
+import common
 
 import sys
 reload(sys)  # Reload does the trick!
 sys.setdefaultencoding('UTF8')
 
-known_division_state = {}
-
-tmp_state_file = os.path.join(os.path.expanduser("~"), ".new_squash-divisions-state")
-state_file = os.path.join(os.path.expanduser("~"), ".squash-divisions-state")
-
-if (os.path.exists(state_file)):
-    with open(state_file) as f:
-        known_division_state = json.load(f)[0]
-
 parser = argparse.ArgumentParser(description='Track changes.')
 parser.add_argument('--data', help="Data directory", required=True)
 parser.add_argument('--keys', help="Path to pile with Twitter keys", required=True)
+parser.add_argument('--lag', help="Lag (in minutes) between update and notification", type=int, required=True)
+parser.add_argument('--enable-twitter', help="Enable twitter updates", action='store_true')
 args = parser.parse_args()
 
-apikeys = json.load(open(args.keys))
-api = twitter.Api(apikeys['consumer_key'],
-                  apikeys['consumer_secret'],
-                  apikeys['access_token_key'],
-                  apikeys['access_token_secret'])
-
 def tweet(message, division_name):
-    complete_message = "{} https://davve.net/squash/#{}".format(message, division_name)
-    api.PostUpdate(complete_message.strip())
+    if (args.enable_twitter):
+        complete_message = "{} https://davve.net/squash/#{}".format(message, division_name)
+        api.PostUpdate(complete_message.strip())
 
 def prettify_division_name(division_name):
     regexp = r'(\d\d\d\d-\d\d\d\d)-(\d\d)-(\d\d)'
@@ -137,25 +129,55 @@ def walk_changes(division, new, old):
     compare_match_twitter(division, data["games"], olddata["games"])
     compare_match(division, data["games"], olddata["games"])
 
-# walk all divisions
-divisions = os.listdir(os.path.abspath(os.path.join(args.data, "divisions")))
-divisions.sort()
-for division in divisions:
-    f = open(os.path.abspath(os.path.join(args.data, "divisions", division)), "r")
-    head = f.read()
-    f.close()
+def main():
+    # Abort if any modifications in the last X minutes.
+    latest_date = None
+    for division in common.divisions(args):
+        with open(os.path.abspath(os.path.join(args.data, "divisions", division)), "r") as f:
+            head = f.read()
+            with gzip.open(os.path.join(args.data, "objects", head)) as d:
+                for line in itertools.islice(d, 1, 2):
+                    date =  datetime.datetime.strptime(line.strip(), "%Y-%m-%dT%H:%M:%S")
+                    if latest_date == None or date > latest_date:
+                        latest_date = date
+    if (datetime.datetime.now() - latest_date).seconds < (args.lag * 60):
+        return
 
-    if division in known_division_state:
-        old = known_division_state[division]
-        if (head != old):
-            walk_changes(division, head, known_division_state[division])
-    else:
-        print "Ny division {} hittad.".format(division)
+    known_division_state = {}
 
-    known_division_state[division] = head
+    tmp_state_file = os.path.join(os.path.expanduser("~"), ".new_squash-divisions-state")
+    state_file = os.path.join(os.path.expanduser("~"), ".squash-divisions-state")
+
+    if (os.path.exists(state_file)):
+        with open(state_file) as f:
+            known_division_state = json.load(f)[0]
+
+    apikeys = json.load(open(args.keys))
+    api = twitter.Api(apikeys['consumer_key'],
+                      apikeys['consumer_secret'],
+                      apikeys['access_token_key'],
+                      apikeys['access_token_secret'])
 
 
-with open(tmp_state_file, "w") as f:
-    json.dump([ known_division_state ], f)
+    # walk all divisions
+    for division in common.divisions(args):
+        with open(os.path.abspath(os.path.join(args.data, "divisions", division)), "r") as f:
+            head = f.read()
 
-os.rename(tmp_state_file, state_file)
+        if division in known_division_state:
+            old = known_division_state[division]
+            if (head != old):
+                walk_changes(division, head, known_division_state[division])
+        else:
+            print "Ny division {} hittad.".format(division)
+
+        known_division_state[division] = head
+
+
+    with open(tmp_state_file, "w") as f:
+        json.dump([ known_division_state ], f)
+
+    os.rename(tmp_state_file, state_file)
+
+if __name__ == "__main__":
+    main()
