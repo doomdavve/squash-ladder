@@ -19,6 +19,7 @@ table {
     border-collapse: collapse;
 }
 td, th {
+    text-align: left;
     padding: 0.5em;
 }
 #results tr:nth-child(3), #results tr:nth-child(5) {
@@ -234,7 +235,7 @@ function addResults(results, scoreboard) {
 
     var table = document.createElement('table');
     table.id = "results";
-    var tablestring = "<tr><th>Namn<th>S<th>V<th>F<th>P";
+    var tablestring = "<tr><th>Namn<th>Spelade<th>Vunna<th>Förlorade<th>Poäng";
     for (var score of scoreboard)
 	tablestring += "<tr><td>" + score.join("<td>");
     table.innerHTML = tablestring;
