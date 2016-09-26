@@ -1,7 +1,12 @@
-FILES=index.html list.cgi load.cgi save.cgi dump.cgi tracker.py common.py copy-to-new-format.py
+WEB_FILES=index.html list.cgi load.cgi save.cgi dump.cgi
+PREFIXED_WEB_FILES=$(addprefix web/,$(WEB_FILES))
+TOOL_FILES=tracker.py common.py copy-to-new-format.py twitter-keys
+PREFIXED_TOOL_FILES=$(addprefix tools/,$(TOOL_FILES))
 HOST=davve.net
-HOSTDIR=/opt/squash/
+HOST_WEBDIR=/opt/squash/web
+HOST_TOOLDDIR=/opt/squash/tools
 publish:
-	scp $(FILES) $(HOST):$(HOSTDIR)
+	scp $(PREFIXED_WEB_FILES) $(HOST):$(HOST_WEBDIR)
+	scp $(PREFIXED_TOOL_FILES) $(HOST):$(HOST_TOOLDDIR)
 
 .PHONY: publish

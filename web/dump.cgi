@@ -8,7 +8,7 @@ import shutil
 
 with io.BytesIO() as zip_file:
     with zipfile.ZipFile(zip_file, 'a', zipfile.ZIP_DEFLATED, False) as zip:
-        for root, dirs, files in os.walk("data/"):
+        for root, dirs, files in os.walk("../data/"):
             for file in files:
                 zip.write(os.path.join(root, file))
 

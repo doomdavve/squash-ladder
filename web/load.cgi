@@ -16,11 +16,11 @@ if (not division):
     division = "test"
 
 try:
-    f = open(os.path.join("data", "divisions", division), "r")
+    f = open(os.path.join("..", "data", "divisions", division), "r")
     head = f.read()
     f.close()
 
-    f = gzip.open(os.path.join("data", "objects", head), "r")
+    f = gzip.open(os.path.join("..", "data", "objects", head), "r")
     parent = f.readline().strip()
     date = f.readline().strip()
     ip = f.readline().strip()
