@@ -17,7 +17,7 @@ sys.setdefaultencoding('UTF8')
 
 parser = argparse.ArgumentParser(description='Track changes.')
 parser.add_argument('--data', help="Data directory", required=True)
-parser.add_argument('--keys', help="Path to pile with Twitter keys", required=True)
+parser.add_argument('--keys', help="Path to file with Twitter keys", required=True)
 parser.add_argument('--lag', help="Lag (in minutes) between update and notification", type=int, required=True)
 parser.add_argument('--enable-twitter', help="Enable twitter updates", action='store_true')
 args = parser.parse_args()
@@ -157,7 +157,6 @@ def main():
                       apikeys['consumer_secret'],
                       apikeys['access_token_key'],
                       apikeys['access_token_secret'])
-
 
     # walk all divisions
     for division in common.divisions(args):
