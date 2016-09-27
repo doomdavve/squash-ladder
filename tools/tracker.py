@@ -24,6 +24,11 @@ args = parser.parse_args()
 
 def tweet(message, division_name):
     if (args.enable_twitter):
+        apikeys = json.load(open(args.keys))
+        api = twitter.Api(apikeys['consumer_key'],
+                          apikeys['consumer_secret'],
+                          apikeys['access_token_key'],
+                          apikeys['access_token_secret'])
         complete_message = "{} https://davve.net/squash/#{}".format(message, division_name)
         api.PostUpdate(complete_message.strip())
 
@@ -151,12 +156,6 @@ def main():
     if (os.path.exists(state_file)):
         with open(state_file) as f:
             known_division_state = json.load(f)[0]
-
-    apikeys = json.load(open(args.keys))
-    api = twitter.Api(apikeys['consumer_key'],
-                      apikeys['consumer_secret'],
-                      apikeys['access_token_key'],
-                      apikeys['access_token_secret'])
 
     # walk all divisions
     for division in common.divisions(args):
