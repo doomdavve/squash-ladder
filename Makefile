@@ -1,6 +1,6 @@
 WEB_FILES=index.html list.cgi load.cgi save.cgi dump.cgi
 PREFIXED_WEB_FILES=$(addprefix web/,$(WEB_FILES))
-TOOL_FILES=tracker.py common.py copy-to-new-format.py twitter-keys
+TOOL_FILES=tracker.py common.py copy-to-new-format.py
 PREFIXED_TOOL_FILES=$(addprefix tools/,$(TOOL_FILES))
 HOST=davve.net
 HOST_WEBDIR=/opt/squash/web
