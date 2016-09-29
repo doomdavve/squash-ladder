@@ -6,12 +6,25 @@ import zipfile
 import sys
 import shutil
 
-with io.BytesIO() as zip_file:
-    with zipfile.ZipFile(zip_file, 'a', zipfile.ZIP_DEFLATED, False) as zip:
-        for root, dirs, files in os.walk("../data/"):
-            for file in files:
-                zip.write(os.path.join(root, file))
+class cd:
+    """Context manager for changing the current working directory"""
+    def __init__(self, newPath):
+        self.newPath = os.path.expanduser(newPath)
 
-    sys.stdout.write("Content-type: application/zip\n")
-    sys.stdout.write("Content-disposition: attachment; filename=database.zip\n\n")
-    sys.stdout.write(zip_file.getvalue())
+    def __enter__(self):
+        self.savedPath = os.getcwd()
+        os.chdir(self.newPath)
+
+    def __exit__(self, etype, value, traceback):
+        os.chdir(self.savedPath)
+
+with cd(".."):
+    with io.BytesIO() as zip_file:
+        with zipfile.ZipFile(zip_file, 'a', zipfile.ZIP_DEFLATED, False) as zip:
+            for root, dirs, files in os.walk("data/"):
+                for file in files:
+                    zip.write(os.path.join(root, file))
+
+        sys.stdout.write("Content-type: application/zip\n")
+        sys.stdout.write("Content-disposition: attachment; filename=database.zip\n\n")
+        sys.stdout.write(zip_file.getvalue())
