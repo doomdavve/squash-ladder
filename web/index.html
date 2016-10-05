@@ -223,6 +223,10 @@ var csv = function() {
     };
 };
 
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 function req(url, fun, params) {
     var http = new XMLHttpRequest();
     http.open(params ? "POST" : "GET", url, true);
@@ -283,7 +287,7 @@ function computeResults(round) {
     if (!round.hasOwnProperty('games'))
 	throw "'games' array missing";
 
-    // Score played games into results.
+    // Score played matches into results.
 
     for (var game of round.games) {
 	if (game.length < 4)
@@ -303,11 +307,12 @@ function computeResults(round) {
 	if (result[name1] === result[name2])
             throw "Spelare " + name1 + " kan inte spela mot sig själv";
 
-	if (result1 == 'W') {
+        if (result1 == 'W') {
 	    updateResult(result[name1], result[name2], -2, 4);
 	} else if (result2 == 'W') {
 	    updateResult(result[name1], result[name2], 4, -2);
-	} else if (result1 > 0 || result2 > 0) {
+	} else if (isNumeric(result1) && isNumeric(result2) {
+            // Match not played yet; do nothing
             if (result1 < 0 || result1 > 3)
 		throw "Resultat '" + result1 + "' är ogiltigt";
             if (result2 < 0 || result2 > 3)
