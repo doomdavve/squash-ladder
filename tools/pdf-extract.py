@@ -19,8 +19,15 @@ from pdfminer.layout import LAParams
 from pdfminer.converter import PDFPageAggregator
 import pdfminer
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("filename")
+parser.add_argument("--round", required=True)
+parser.add_argument("--url", default=True)
+args = parser.parse_args()
+
 # Open a PDF file.
-fp = open('/home/davve/test2.pdf', 'rb')
+fp = open(args.filename, 'rb')
 parser = PDFParser(fp)
 document = PDFDocument(parser)
 if not document.is_extractable:
@@ -29,13 +36,13 @@ rsrcmgr = PDFResourceManager()
 
 # BEGIN LAYOUT ANALYSIS
 # Set parameters for analysis.
-laparams = LAParams(line_overlap=0.1,
-                    char_margin=0.1,
-                    line_margin=0.1,
-                    word_margin=0.1,
-                    boxes_flow=0.5,
-                    detect_vertical=False,
-                    all_texts=False)
+laparams = LAParams(
+    line_overlap=0.1,
+    char_margin=0.1,
+    line_margin=0.5,
+    word_margin=0.1,
+    boxes_flow=0.5,
+)
 
 # Create a PDF page aggregator object.
 device = PDFPageAggregator(rsrcmgr, laparams=laparams)
@@ -43,8 +50,14 @@ device = PDFPageAggregator(rsrcmgr, laparams=laparams)
 # Create a PDF interpreter object.
 interpreter = PDFPageInterpreter(rsrcmgr, device)
 
+INFO_FIRST_ROW = 720
+INFO_SECOND_ROW = 650
+FUZZINESS = 14
+FUZZINESS_X = FUZZINESS
+FUZZINESS_Y = FUZZINESS
+
 def fuzzy_match(a1, a2):
-    if abs(a1[0] - a2[0]) > 10 or abs(a1[1] - a2[1]) > 10:
+    if abs(a1[0] - a2[0]) > FUZZINESS_X or abs(a1[1] - a2[1]) > FUZZINESS_Y:
         return False
     return True
 
@@ -54,16 +67,16 @@ class PageState(object):
             [ "DIVISION_NR", [492, 795] ],
 
             [ "SPELDATUM_1", [93, 769] ],
-            [ "SPELDATUM_1_REDUNDANT", [271, 720] ],
-            [ "TID_BANA_1", [331, 720] ],
-            [ "SPELARE_HEMMA_1", [40, 720] ],
-            [ "SPELARE_BORTA_1", [162, 720] ],
+            [ "SPELDATUM_1_REDUNDANT", [271, INFO_FIRST_ROW] ],
+            [ "TID_BANA_1", [331, INFO_FIRST_ROW] ],
+            [ "SPELARE_HEMMA_1", [40, INFO_FIRST_ROW] ],
+            [ "SPELARE_BORTA_1", [162, INFO_FIRST_ROW] ],
 
             [ "SPELDATUM_2", [93, 706] ],
-            [ "SPELDATUM_2_REDUNDANT", [271, 659] ],
-            [ "TID_BANA_2", [331, 659] ],
-            [ "SPELARE_HEMMA_2", [40, 658] ],
-            [ "SPELARE_BORTA_2", [162, 658] ],
+            [ "SPELDATUM_2_REDUNDANT", [271, INFO_SECOND_ROW] ],
+            [ "TID_BANA_2", [331, INFO_SECOND_ROW] ],
+            [ "SPELARE_HEMMA_2", [40, INFO_SECOND_ROW] ],
+            [ "SPELARE_BORTA_2", [162, INFO_SECOND_ROW] ],
 
             [ "SPELDATUM_3", [93, 643] ],
             [ "SPELDATUM_3_REDUNDANT", [271, 590] ],
@@ -129,7 +142,8 @@ class PageState(object):
             "Nästa omgång spelas.*",
             "matcher.",
             "Hem",
-            "Arbetet"
+            "Arbetet",
+            "-"
         ]
         # telephone number:
         self.ignored_tokens_with_coord = [
@@ -144,12 +158,12 @@ class PageState(object):
 
         for ignored in self.ignored_tokens:
             if re.match(ignored, text.encode('utf-8')):
-                print "ignored: %s" % text.replace('\n', '\\n').encode('utf-8')
+                #print "ignored: %s" % text.replace('\n', '\\n').encode('utf-8')
                 return
 
         for ignored in self.ignored_tokens_with_coord:
             if re.match(ignored[0], text.encode('utf-8')) and fuzzy_match([xcoord, ycoord], ignored[1]):
-                print "ignored with coord: %s" % text.replace('\n', '\\n').encode('utf-8')
+                #print "ignored with coord: %s" % text.replace('\n', '\\n').encode('utf-8')
                 return
 
         for entry in self.scanning_table:
@@ -168,7 +182,7 @@ class PageState(object):
         return 'SPELARE_BORTA_5' in self.scanning_results
 
     def division_name(self):
-        return "2016-r2-d%d" % int(self.scanning_results["DIVISION_NR"])
+        return "2016-r{}-d{}".format(args.round, int(self.scanning_results["DIVISION_NR"]))
 
     def calc_games(self):
         out = {}
@@ -177,7 +191,7 @@ class PageState(object):
         games = []
         for gamenr in range(1,6):
             #print gamenr
-            gamedate = self.scanning_results["SPELDATUM_%d" % gamenr]
+            gamedate = self.scanning_results["SPELDATUM_%d_REDUNDANT" % gamenr].split("\n")[0]
             homeplayers = self.scanning_results["SPELARE_HEMMA_%d" % gamenr].split("\n")[0:3]
             awayplayers = self.scanning_results["SPELARE_BORTA_%d" % gamenr].split("\n")[0:3]
             gameinfo = self.scanning_results["TID_BANA_%d" % gamenr].split("\n")[0:3]
@@ -191,13 +205,16 @@ class PageState(object):
                 if (m):
                     gametime = m.group(1)
                     gamecourse = m.group(2)
-                games.append([hp, ap, 0, 0, gamedate, gametime, gamecourse])
+                games.append([hp, ap, '-', '-', gamedate, gametime, gamecourse])
                 players.add(hp)
                 players.add(ap)
 
+#        if len(players) != 6:
+#            raise Exception("Wrong number of players: {}".format(len(players), players))
+
         out["games"] = games
         out["players"] = list(players)
-        out["caption"] = "2016 round 2 division %d" % int(self.scanning_results["DIVISION_NR"])
+        out["caption"] = "2016 round {} division %d".format(args.round, int(self.scanning_results["DIVISION_NR"]))
 
         return out
 
@@ -219,10 +236,6 @@ def parse_obj(lt_objs, texts):
 i = 0
 # loop over all pages in the document
 for i, page in enumerate(PDFPage.create_pages(document)):
-
-    if (i != 1):
-        continue
-
     p = PageState()
 
     # read the page into a layout object
@@ -238,22 +251,24 @@ for i, page in enumerate(PDFPage.create_pages(document)):
     texts.sort(key=lambda a: a[0], reverse=False)
     texts.sort(key=lambda a: a[1], reverse=True)
 
-    #print i
+    try:
+        for text in texts:
+            p.process_input(text[0], text[1], text[2].strip())
 
-    for text in texts:
-        p.process_input(text[0], text[1], text[2].strip())
+        r = p.calc_games()
+        json.dump(r, sys.stdout)
+    except:
+        print i
+        raise
 
-    r = p.calc_games()
-
-    response = urllib2.urlopen("https://davve.net/squash/load.cgi?division=%s" % p.division_name())
+    response = urllib2.urlopen("{}/load.cgi?division={}".format(args.url, p.division_name())
     data = json.load(response)
 
     if (data[0] == ''):
         values = { 'division' : p.division_name(),
                    'data' : json.dumps(r) }
         data = urllib.urlencode(values)
-        req = urllib2.Request("https://davve.net/squash/save.cgi", data)
+        req = urllib2.Request("{}/save.cgi".format(args.url), data)
         response = urllib2.urlopen(req)
 
         print "Saved: %s" % response.read()
-
