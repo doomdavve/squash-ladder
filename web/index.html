@@ -311,8 +311,12 @@ function computeResults(round) {
 	    updateResult(result[name1], result[name2], -2, 4);
 	} else if (result2 == 'W') {
 	    updateResult(result[name1], result[name2], 4, -2);
-	} else if (isNumeric(result1) && isNumeric(result2) {
-            // Match not played yet; do nothing
+	} else if (isNumeric(result1) && isNumeric(result2)) {
+
+            if (result1 == 0 && result2 == 0)
+                // For now assume match not played yet; do nothing
+                continue;
+
             if (result1 < 0 || result1 > 3)
 		throw "Resultat '" + result1 + "' är ogiltigt";
             if (result2 < 0 || result2 > 3)
@@ -356,7 +360,7 @@ function computeResults(round) {
 
 		if ((name1 == a[0] && name2 == b[0]) ||
                     (name1 == b[0] && name2 == a[0]))
-                    return result1 - result2;
+                    return result2 - result1;
             }
             // No played games between them. What to do?
             console.log("Warning: could not break tie between " + a[0] + " and " + b[0] + " without Math.random()");
@@ -382,7 +386,8 @@ var errorblock = document.querySelector('#error');
 
 var results = document.querySelector('#results');
 var division_name = document.location.hash.substr(1).split('/')[0];
-if (document.location.hash.substr(1).split('/')[1] == 'admin')
+var admin = document.location.hash.substr(1).split('/')[1] == 'admin';
+if (admin)
     document.querySelector('.admin').style.display = 'block';
 
 var currenthash = ""; // current object we're working on
@@ -412,6 +417,7 @@ function build_scoreboard() {
 	addResults(results, computeResults(round));
     } catch (e) {
 	errorblock.innerHTML = e;
+        throw (e);
     }
 }
 
@@ -507,9 +513,9 @@ function load_round() {
 	function() {
             if (this.readyState == 4 && this.status == 200) {
 		try {
-                    var data = this.response[4];
-                    round = JSON.parse(data);
-                    document.querySelector('.editui textarea').value = data;
+                    round = this.response[4];
+                    if (admin)
+                        document.querySelector('.editui textarea').value = JSON.stringify(round);
                     currenthash = this.response[0];
                     on_round_changed();
 		} catch (e) {
@@ -566,7 +572,7 @@ function build_ui_area() {
 	var tr = document.createElement('tr');
 	tr.setAttribute("data-game-idx", i);
 
-	var tablestring = `<td>${game[0]}<td>${game[1]}<td>Bana ${game[6] || "?"}<td><input class="p1" size=2 value=${game[2]}><td><input class="p2" size=2 value=${game[3]}>`;
+	var tablestring = `<td>${game[0]}<td>${game[1]}<td>Bana ${game[6] || "?"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
 
 	tr.innerHTML = tablestring;
 
