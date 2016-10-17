@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
+import datetime
 import gzip
 import itertools
-import datetime
 import json
 import os
 import re
 import twitter
-
-import common
 
 import sys
 reload(sys)  # Reload does the trick!
@@ -21,6 +19,10 @@ parser.add_argument('--keys', help="Path to file with Twitter keys", required=Tr
 parser.add_argument('--lag', help="Lag (in minutes) between update and notification", type=int, required=True)
 parser.add_argument('--enable-twitter', help="Enable twitter updates", action='store_true')
 args = parser.parse_args()
+
+def divisions(args):
+    d = sorted(os.listdir(os.path.abspath(os.path.join(args.data, 'divisions'))))
+    return filter(lambda x: re.match(r'^\d\d\d\d-\d\d\d\d-\d\d-\d\d$', x), d)
 
 def tweet(message, division_name):
     if (args.enable_twitter):
@@ -137,7 +139,7 @@ def walk_changes(division, new, old):
 def main():
     # Abort if any modifications in the last X minutes.
     latest_date = None
-    for division in common.divisions(args):
+    for division in divisions(args):
         with open(os.path.abspath(os.path.join(args.data, "divisions", division)), "r") as f:
             head = f.read()
             with gzip.open(os.path.join(args.data, "objects", head)) as d:
@@ -158,7 +160,7 @@ def main():
             known_division_state = json.load(f)[0]
 
     # walk all divisions
-    for division in common.divisions(args):
+    for division in divisions(args):
         with open(os.path.abspath(os.path.join(args.data, "divisions", division)), "r") as f:
             head = f.read()
 
