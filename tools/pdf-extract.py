@@ -22,8 +22,9 @@ import pdfminer
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("filename")
-parser.add_argument("--round", required=True)
-parser.add_argument("--url", default=True)
+parser.add_argument("--season", required=True)
+parser.add_argument("--round", required=True, type=int)
+parser.add_argument("--url", required=True)
 args = parser.parse_args()
 
 # Open a PDF file.
@@ -182,7 +183,7 @@ class PageState(object):
         return 'SPELARE_BORTA_5' in self.scanning_results
 
     def division_name(self):
-        return "2016-r{}-d{}".format(args.round, int(self.scanning_results["DIVISION_NR"]))
+        return "{0:s}-{1:02d}-{2:02d}".format(args.season, args.round, int(self.scanning_results["DIVISION_NR"]))
 
     def calc_games(self):
         out = {}
@@ -214,7 +215,6 @@ class PageState(object):
 
         out["games"] = games
         out["players"] = list(players)
-        out["caption"] = "2016 round {} division %d".format(args.round, int(self.scanning_results["DIVISION_NR"]))
 
         return out
 
@@ -261,14 +261,16 @@ for i, page in enumerate(PDFPage.create_pages(document)):
         print i
         raise
 
-    response = urllib2.urlopen("{}/load.cgi?division={}".format(args.url, p.division_name())
+    url = "{}/load.cgi?division={}".format(args.url, p.division_name())
+    print url
+    response = urllib2.urlopen(url)
     data = json.load(response)
 
-    if (data[0] == ''):
+    if data[0] == '':
         values = { 'division' : p.division_name(),
                    'data' : json.dumps(r) }
         data = urllib.urlencode(values)
+
         req = urllib2.Request("{}/save.cgi".format(args.url), data)
         response = urllib2.urlopen(req)
-
         print "Saved: %s" % response.read()
