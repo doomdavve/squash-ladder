@@ -384,8 +384,8 @@ function computeResults(round) {
                     (name1 == b[0] && name2 == a[0]))
                     return result2 - result1;
             }
-            // No played games between them. What to do?
-            console.log("Warning: could not break tie between " + a[0] + " and " + b[0] + " without Math.random()");
+            // No played match between them. What to do? FIXME: Count games.
+            console.log("Warning: could not break tie between " + a[0] + " and " + b[0] + ".");
             return Math.random() - 0.5;
 	} else {
             return points2 - points1;
@@ -611,7 +611,7 @@ function build_ui_area() {
 	    if (this.value == 'W')
 		round.games[gameidx][2] = 'W';
 	    else
-		round.games[gameidx][2] = parseInt(this.value);
+		round.games[gameidx][2] = this.value == '-' ? '-' : parseInt(this.value);
             build_scoreboard();
             save();
 	};
@@ -621,7 +621,7 @@ function build_ui_area() {
 	    if (this.value == 'W')
 		round.games[gameidx][3] = 'W';
 	    else
-		round.games[gameidx][3] = parseInt(this.value);
+		round.games[gameidx][3] = this.value == '-' ? '-' : parseInt(this.value);
             build_scoreboard();
             save();
 	};

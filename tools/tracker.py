@@ -26,6 +26,7 @@ def divisions(args):
 
 def tweet(message, division_name):
     if (args.enable_twitter):
+        assert (os.path.exists(args.keys))
         apikeys = json.load(open(args.keys))
         api = twitter.Api(apikeys['consumer_key'],
                           apikeys['consumer_secret'],
@@ -33,6 +34,8 @@ def tweet(message, division_name):
                           apikeys['access_token_secret'])
         complete_message = "{} https://davve.net/squash/#{}".format(message, division_name)
         api.PostUpdate(complete_message.strip())
+    else:
+        print "Twitter: {} https://davve.net/squash/#{}".format(message, division_name)
 
 def prettify_division_name(division_name):
     regexp = r'(\d\d\d\d-\d\d\d\d)-(\d\d)-(\d\d)'
