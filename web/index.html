@@ -116,9 +116,9 @@ noscript {
 <div id="error"></div>
 <div class="ui">
     <div class="uibar">
-	<label>Säsong</label><select id="yearselection"></select>
-        <label>Omgång</label><select id="roundselection"></select>
-        <label>Division</label><select id="divisionselection"></select>
+	<select id="yearselection"></select>
+        <select id="roundselection"></select>
+        <label>#</label><select id="divisionselection"></select>
     </div>
     <div class="uiarea"></div>
     <div class="admin">
@@ -258,7 +258,7 @@ function addResults(results, scoreboard) {
 
     var table = document.createElement('table');
     table.id = "results";
-    var tablestring = "<tr><th>Namn<th>Spelade<th>Vunna<th>Förlorade<th>Poäng";
+    var tablestring = "<tr><th title=\"Namn\">Namn<th title=\"Spelade\">S<th title=\"Vunna\">V<th title=\"Förlorade\">F<th title=\"Poäng\">P";
     for (var score of scoreboard)
 	tablestring += "<tr><td>" + score.join("<td>");
     table.innerHTML = tablestring;
@@ -381,7 +381,7 @@ function computeResults(round) {
 
     var namearr = parse_division_name(division_name);
     if (namearr) {
-        arr.unshift(namearr[0] + "#" + namearr[1]);
+        arr.unshift(namearr[0] + " / " + namearr[1]);
         arr.unshift(namearr[2]);
     }
 

@@ -1,0 +1,3 @@
+[submodule "squash-config"]
+	path = squash-config
+	url = eddard.davve.net:/archive/repos/squash-config
