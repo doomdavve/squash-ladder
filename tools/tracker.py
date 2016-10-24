@@ -49,7 +49,7 @@ def compare_match_twitter(division, matches_head, matches_tail):
     for i, match in enumerate(matches_head):
         oldmatch = matches_tail[i]
         if match != matches_tail[i]:
-            if oldmatch[2] == 0 and oldmatch[3] == 0:
+            if oldmatch[2] == '-' and oldmatch[3] == '-':
                 new_matches.append([match, oldmatch])
             else:
                 updated_matches.append([match, oldmatch])
@@ -77,7 +77,7 @@ def compare_match(division, matches_head, matches_tail):
     for i, match in enumerate(matches_head):
         oldmatch = matches_tail[i]
         if match != matches_tail[i]:
-            if oldmatch[2] == 0 and oldmatch[3] == 0:
+            if oldmatch[2] == '-' and oldmatch[3] == '-':
                 new_matches.append([match, oldmatch])
             else:
                 updated_matches.append([match, oldmatch])
