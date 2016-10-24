@@ -24,7 +24,7 @@ try:
     parent = f.readline().strip()
     date = f.readline().strip()
     ip = f.readline().strip()
-    data = f.read()
+    data = json.load(f)
     f.close()
 
     json.dump([head, parent, date, ip, data], sys.stdout)
