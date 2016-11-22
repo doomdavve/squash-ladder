@@ -258,6 +258,10 @@ function req(url, fun, params) {
     http.send(params);
 }
 
+function make_player_link(player) {
+    return `<a href="player.html?${player}">${player}</a>`;
+}
+
 function addResults(results, scoreboard) {
     var h1 = document.createElement('h1');
     h1.textContent = scoreboard.shift();
@@ -273,7 +277,7 @@ function addResults(results, scoreboard) {
     table.id = "results";
     var tablestring = "<tr><th title=\"Namn\">Namn<th title=\"Spelade\">S<th title=\"Vunna\">V<th title=\"Förlorade\">F<th title=\"Poäng\">P";
     for (var score of scoreboard)
-	tablestring += "<tr><td>" + score.join("<td>");
+	tablestring += "<tr><td>" + make_player_link(score[0]) + "<td>" + score.slice(1).join("<td>");
     table.innerHTML = tablestring;
     results.appendChild(table);
 }
