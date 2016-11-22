@@ -164,7 +164,7 @@ var player_name = decodeURIComponent(document.location.search.substr(1));
 var query = { player: player_name };
 document.title += " - " + player_name;
 
-req("http://localhost/squash/load.cgi?player=" + encodeURIComponent(query.player), function(e) {
+req("load.cgi?player=" + encodeURIComponent(query.player), function(e) {
     if (this.readyState == 4 && this.status == 200) {
 
         var table_strings = []
