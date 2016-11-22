@@ -393,7 +393,7 @@ function computeResults(round) {
 
     var namearr = parse_division_name(division_name);
     if (namearr) {
-        arr.unshift(namearr[0] + " / " + namearr[1]);
+        arr.unshift(namearr[0].replace("-", "/") + " | " + parseInt(namearr[1]));
         arr.unshift(namearr[2]);
     }
 
