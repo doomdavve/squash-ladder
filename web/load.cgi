@@ -7,17 +7,19 @@ import json
 import os
 import sys
 import re
+import urllib
 
 print "Content-type: application/json"
 print "\n\n"
 
 form = cgi.FieldStorage()
 division = form.getvalue('division')
-player = form.getvalue('player') if not division else None
+player = unicode(urllib.unquote(form.getvalue('player')), 'utf-8') if not division else None
+
 division = "test" if not division else division
 
 if player:
-    division_regex = re.compile(r'\d+-\d+-\d+-\d+')
+    division_regex = re.compile(r'\d\d\d\d-\d\d\d\d-\d\d-\d\d')
     divisions = filter(lambda x: re.match(division_regex, x), os.listdir("../data/divisions"))
     divisions.sort()
 

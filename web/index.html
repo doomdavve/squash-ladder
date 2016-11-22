@@ -57,7 +57,7 @@ input[type=button] {
         transparent 20px
     );
     color: white;
-    border-bottom: 10px solid #568;
+    border-bottom: 10px solid hsl(215, 30%, 40%);
     min-height: 22em; /* Guesstimate */
 }
 #results, .ui {
@@ -116,6 +116,13 @@ noscript {
     font-size: 1.5em;
     font-weight: bold;
     font-family: lato, Tahoma, sans-serif;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+a:hover {
+    text-decoration: underline;
 }
 </style>
 <div id="resultswrapper"><div id="results"></div></div>
@@ -587,7 +594,7 @@ function build_ui_area() {
 	var tr = document.createElement('tr');
 	tr.setAttribute("data-game-idx", i);
 
-	var tablestring = `<td>${game[0]}<td>${game[1]}<td>Bana ${game[6] || "?"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
+	var tablestring = `<td><a href="player.html?${game[0]}">${game[0]}</a><td><a href="player.html?${game[1]}">${game[1]}</a><td>Bana ${game[6] || "?"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
 
 	tr.innerHTML = tablestring;
 
