@@ -61,6 +61,12 @@ a:hover {
     margin: 0 auto;
     padding: 0.4em;
 }
+footer {
+    text-align: center;
+    clear: both;
+    font-size: small;
+    font-style: italic;
+}
 </style>
 <div id="statswrapper"><div id="stats">
     <table>
@@ -74,8 +80,11 @@ a:hover {
 </div></div>
 <div id="ui">
 </div>
+<footer>
+    Ansvarig: <a href="mailto:davve@davve.net">davve@davve.net</a>. Sidan har ingen officiell anknytning till Team Göteborg SK.
+    <p><a href="https://twitter.com/landalasquash" class="twitter-follow-button" data-show-count="false">Följ @landalasquash</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+</footer>
 <script>
-
 function decide_is_played(match)
 {
     return match[2] > 0 || match[3] > 0 || match[2] == 'W' || match[3] == 'W';
