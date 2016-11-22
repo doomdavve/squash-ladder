@@ -93,7 +93,7 @@ def compare_match(division, matches_head, matches_tail):
         for diff in new_matches:
             match = diff[0]
             oldmatch = diff[1]
-            print "{} - {}: {} - {}""".format(
+            print "{} - {}: {} - {}".format(
                 match[0], match[1], match[2], match[3])
 
     if len(updated_matches) > 0:
@@ -107,7 +107,7 @@ def compare_match(division, matches_head, matches_tail):
         for diff in updated_matches:
             match = diff[0]
             oldmatch = diff[1]
-            print "{} - {}: {} - {} ({} - {})""".format(
+            print "{} - {}: {} - {} ({} - {})".format(
                 match[0], match[1], match[2], match[3], oldmatch[2], oldmatch[3])
 
     if len(new_matches) > 0 or len(updated_matches) > 0:
