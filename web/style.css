@@ -1,0 +1,150 @@
+body {
+    margin: 0;
+    font-family: lato, Tahoma, sans-serif;
+}
+#error {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    background-color: pink;
+}
+table {
+    width: 100%;
+}
+table th {
+    text-align: center;
+}
+table tr.unplayed {
+    color: grey;
+}
+table td.current {
+    font-weight: bold;
+}
+table h1 {
+    color: hsl(215, 30%, 40%);
+}
+table h2 {
+    text-align: left;
+}
+td, th {
+    text-align: left;
+    padding: 0.5em;
+}
+#results th:nth-child(2), #results th:nth-child(3), #results th:nth-child(4),
+#results th:nth-child(5), #results td:nth-child(2), #results td:nth-child(3),
+#results td:nth-child(4), #results td:nth-child(5) {
+    text-align: right;
+}
+#results tr:nth-child(3), #results tr:nth-child(5) {
+    border-bottom: 1px dashed grey;
+}
+.uibar {
+    text-align: center;
+    font-weight: bold;
+    margin: 1em;
+}
+button { flex: 0 0 auto; }
+label { margin: 0.3em;}
+input[type=button] {
+    padding: 1em;
+    color: white;
+    border-radius: 0.5em;
+    border: none;
+    font-weight: bold;
+    float: right;
+    display: block;
+    width: 10em;
+    margin: 1em;
+}
+#resultswrapper {
+    background-color: #222;
+    background-image: repeating-linear-gradient(
+        135deg,
+        rgba(255,255,255,.02),
+        rgba(255,255,255,.02) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    color: white;
+    border-bottom: 10px solid hsl(215, 30%, 40%);
+    min-height: 22em; /* Guesstimate */
+}
+#results, .ui {
+    max-width: 60em;
+    margin: 0 auto;
+    padding: 0.4em;
+}
+td input {
+    text-align: right;
+    border: 1px dashed lightgrey;
+    padding: 0.2em;
+}
+.downloadcsv {
+    margin: 1em;
+    float: left;
+    font-style: italic;
+}
+input.p1, input.p2 {
+    width: 1em;
+}
+.uiarea h2 {
+    text-align: center;
+}
+.dump {
+    margin: 1em;
+    float: right;
+}
+.edit {
+    margin: 1em;
+    float: right;
+}
+.editui {
+    clear: both;
+    display: none;
+}
+.editui textarea {
+    width: 100%;
+    height: 20em;
+}
+.admin {
+    display: none;
+}
+noscript {
+    font-size: 3em;
+    text-align: center;
+    display: block;
+    margin: 2em;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+a:hover {
+    text-decoration: underline;
+}
+#statswrapper {
+    background-color: #222;
+    background-image: repeating-linear-gradient(
+        135deg,
+        rgba(255,255,255,.02),
+        rgba(255,255,255,.02) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    color: white;
+    border-bottom: 10px solid hsl(215, 30%, 40%);
+}
+#stats table {
+}
+#stats, #ui {
+    max-width: 60em;
+    margin: 0 auto;
+    padding: 0.4em;
+}
+footer {
+    margin-top: 2em;
+    text-align: center;
+    clear: both;
+    font-size: small;
+    font-style: italic;
+}
