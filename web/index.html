@@ -254,7 +254,7 @@ function req(url, fun, params) {
 }
 
 function make_player_link(player) {
-    return `<a href="player.html?${player}">${player}</a>`;
+    return `<a tabindex=-1 href="player.html?${player}">${player}</a>`;
 }
 
 function addResults(results, scoreboard) {
@@ -580,7 +580,7 @@ function build_ui_area() {
     round.games.forEach(function(game, i) {
         if (i % 3 == 0) {
             var header = document.createElement('h2');
-            header.textContent = ((game[4] || "???") + " " + (game[5] || "???"));
+            header.textContent = ((game[4] || "") + " " + (game[5] || ""));
 
             var tr = document.createElement('tr');
             var td = document.createElement('td');
@@ -593,7 +593,7 @@ function build_ui_area() {
 	var tr = document.createElement('tr');
 	tr.setAttribute("data-game-idx", i);
 
-	var tablestring = `<td><a href="player.html?${game[0]}">${game[0]}</a><td><a href="player.html?${game[1]}">${game[1]}</a><td>Bana ${game[6] || "?"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
+	var tablestring = `<td>${make_player_link(game[0])}<td>${make_player_link(game[1])}<td>Bana ${game[6] || "x"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
 
 	tr.innerHTML = tablestring;
 
@@ -609,8 +609,14 @@ function build_ui_area() {
             var gameidx = this.parentNode.parentNode.getAttribute("data-game-idx");
 	    if (this.value == 'W')
 		round.games[gameidx][2] = 'W';
-	    else
-		round.games[gameidx][2] = this.value == '-' ? '-' : parseInt(this.value);
+	    else if (this.value == '-')
+		round.games[gameidx][2] = '-';
+            else {
+		round.games[gameidx][2] = parseInt(this.value);
+                if (isNaN(round.games[gameidx][2]))
+                    this.value = round.games[gameidx][2] = '-';
+            }
+
             build_scoreboard();
             save();
 	};
@@ -619,8 +625,14 @@ function build_ui_area() {
             var gameidx = this.parentNode.parentNode.getAttribute("data-game-idx");
 	    if (this.value == 'W')
 		round.games[gameidx][3] = 'W';
-	    else
-		round.games[gameidx][3] = this.value == '-' ? '-' : parseInt(this.value);
+	    else if (this.value == '-')
+                round.games[gameidx][3] = '-';
+            else {
+		round.games[gameidx][3] = parseInt(this.value);
+                if (isNaN(round.games[gameidx][3]))
+                    this.value = round.games[gameidx][3] = '-';
+            }
+
             build_scoreboard();
             save();
 	};
