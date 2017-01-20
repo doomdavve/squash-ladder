@@ -290,7 +290,7 @@ var divisionselect = document.querySelector('#divisionselection');
 var errorblock = document.querySelector('#error');
 
 var results = document.querySelector('#results');
-var division_name = document.location.hash.substr(1).split('/')[0];
+var division_name;
 var admin = document.location.hash.substr(1).split('/')[1] == 'admin';
 if (admin)
     document.querySelector('.admin').style.display = 'block';
@@ -455,6 +455,12 @@ function setup_raw_edit() {
     }
 }
 
+function update_division_name_from_hash() {
+    division_name = document.location.hash.substr(1).split('/')[0];
+    if (division_name)
+        load_round();
+}
+
 function build_ui_area() {
     var uiarea = document.querySelector('.uiarea');
     uiarea.innerHTML = '';
@@ -556,10 +562,10 @@ function build_ui_area() {
 yearselect.onchange = update_roundnr;
 roundselect.onchange = update_divisionnr;
 divisionselect.onchange = update_round;
+onhashchange = update_division_name_from_hash;
 
 updateList();
-if (division_name)
-    load_round();
 setup_raw_edit();
+update_division_name_from_hash();
 
 </script>
