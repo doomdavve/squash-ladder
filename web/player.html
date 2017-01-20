@@ -12,6 +12,7 @@
         <tr><td>Namn<td><span class="name"></span>
         <tr><td>Antal spelade matcher<td><span class="n_matches"></span>
         <tr><td>Antal vunna matcher<td><span class="n_won_matches"></span>
+        <tr><td>Vinstprocent<td><span class="win_percentage"></span>
         <tr><td>Högsta division<td><span class="highest_division"></span>
     </table>
 </div></div>
@@ -58,7 +59,7 @@ function make_player_link(name) {
 }
 
 function make_round_link(division, arr) {
-    return "<a href='index.html#" + division + "'>Omgång " + parseInt(arr[1]) + " division " + arr[2] + "</a>";
+    return "<a href='index.html#" + division + "'>Division " + parseInt(arr[2]) + " - omgång " + parseInt(arr[1]) + "</a>";
 }
 
 function req(url, fun, params) {
@@ -106,6 +107,10 @@ function arrange_match(match) {
     }
 
     return [ match[1], match[0], match[3], match[2] ].concat(match.slice(4));
+}
+
+function to_percentage_string(normalized) {
+    return Number(Math.round((normalized * 100)+'e1')+'e-1') + "%"; // 1.01
 }
 
 var player_name = decodeURIComponent(document.location.search.substr(1));
@@ -168,6 +173,7 @@ req("load.cgi?player=" + encodeURIComponent(query.player), function(e) {
 
         document.querySelector('#stats .n_matches').textContent = number_of_matches;
         document.querySelector('#stats .n_won_matches').textContent = number_of_won_matches;
+        document.querySelector('#stats .win_percentage').textContent = to_percentage_string(number_of_won_matches / number_of_matches);
         document.querySelector('#stats .highest_division').textContent = highest_division;
     }
 });
