@@ -375,9 +375,12 @@ function updateList() {
                     }
 		}
 
-		for (var year of Object.keys(years).reverse()) {
+		for (var year of Object.keys(years)) {
                     yearselect.add(option(year, requested_year));
 		}
+
+                if (!division_name)
+                    yearselect.options[yearselect.options.length - 1].selected = true;
 
 		update_roundnr();
             }
