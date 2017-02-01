@@ -12,7 +12,7 @@
         <tr><td>Namn<td><span class="name"></span>
         <tr><td>Antal spelade matcher<td><span class="n_matches"></span>
         <tr><td>Antal vunna matcher<td><span class="n_won_matches"></span>
-        <tr><td>Vinstprocent<td><span class="win_percentage"></span>
+        <tr><td>Vinstprocent<td><span class="win_percentage">0%</span>
         <tr><td>Högsta division<td><span class="highest_division"></span>
     </table>
 </div></div>
@@ -173,7 +173,8 @@ req("load.cgi?player=" + encodeURIComponent(query.player), function(e) {
 
         document.querySelector('#stats .n_matches').textContent = number_of_matches;
         document.querySelector('#stats .n_won_matches').textContent = number_of_won_matches;
-        document.querySelector('#stats .win_percentage').textContent = to_percentage_string(number_of_won_matches / number_of_matches);
+        if (number_of_matches > 0)
+            document.querySelector('#stats .win_percentage').textContent = to_percentage_string(number_of_won_matches / number_of_matches);
         document.querySelector('#stats .highest_division').textContent = highest_division;
     }
 });
