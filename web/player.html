@@ -92,9 +92,9 @@ function parse_division_name(division_name) {
     var re = /(\d\d\d\d-\d\d\d\d)-(\d\d)-(\d\d)/;
     var found = division_name.match(re);
     if (found)
-	return found.slice(1,4);
+        return found.slice(1,4);
     else
-	return null;
+        return null;
 }
 
 function arrange_match(match) {

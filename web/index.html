@@ -363,7 +363,7 @@ function parse_division_name(division_name) {
 
 var years = {};
 
-function updateList() {
+function update_list() {
     var requested_year = division_name ? parse_division_name(division_name)[0] : 0;
     req("list.cgi",
         function() {
@@ -584,7 +584,7 @@ divisionselect.onchange = update_round;
 onhashchange = update_division_name_from_hash;
 
 update_division_name_from_hash();
-updateList();
+update_list();
 setup_raw_edit();
 
 </script>
