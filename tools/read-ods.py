@@ -1,26 +1,17 @@
 #!/usr/bin/python
 
 import argparse
+import unicodecsv
+import datetime
 import json
 import pyexcel
+import re
 import urllib
 import urllib2
-import re
-import datetime
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--season", required=True)
-parser.add_argument("--round", required=True, type=int)
-parser.add_argument("--url", required=True)
-parser.add_argument("--new", action='store_true')
-parser.add_argument("--update", action='store_true')
-parser.add_argument("--describe", action='store_true')
-parser.add_argument("--reset", action='store_true')
-args = parser.parse_args()
 
 rounds_per_season = 6
 
-def make_division_name(i):
+def make_division_name(args, i):
     return "%s-%02d-%02d" % (args.season, args.round, i)
 
 def parse_res(res):
@@ -31,14 +22,11 @@ def parse_res(res):
 
 def get_result(sheet, i):
     """ get result of match between 1 and 15 (end-inclusive) """
-
     offset = 2
     player1name = sheet["B"+str(i+offset)]
     player2name = sheet["C"+str(i+offset)]
-
     player1res = parse_res(sheet["D"+str(i+offset)])
     player2res = parse_res(sheet["E"+str(i+offset)])
-
     return [player1name, player2name, player1res, player2res]
 
 def get_unplayed_match(sheet, i, players):
@@ -54,18 +42,6 @@ def get_unplayed_match(sheet, i, players):
     players.add(ap)
 
     return [hp, ap, '-', '-', gamedate, gametime, gamecourse]
-
-def compose_filename():
-    season = args.season
-    round = args.round
-    if (args.update):
-        round += 1
-        if (round > rounds_per_season):
-            round = 1
-            m = re.match(r'([0-9]+)-([0-9]+)', season)
-            season = str((int(m.group(1))+1)) + '-' + str((int(m.group(2))+1))
-    return ("/Users/davve/Downloads/Squash_league_%s-%02d-final.ods" %
-            (season, round))
 
 def extract_matches(book, league):
     out = {}
@@ -150,65 +126,38 @@ def walk_and_describe_updates(data, results):
                                                                                                 match[2], match[3])
                 break
 
-print "Reading from {}".format(compose_filename())
-book = pyexcel.get_book(file_name=compose_filename())
-
-for i in range(1,25):
+def main_new(args, current_book, new_book, i, ctx):
     league = "L"+str(i)
-    if (args.new):
-        division_name = make_division_name(i)
-        url = "{}/load.cgi?division={}".format(args.url, division_name)
-        response = urllib2.urlopen(url)
-        d = json.load(response)
-        if d[0] == '':
-            if (args.describe):
-                print "NOT IMPLEMENTED"
-                print json.dumps(extract_matches(book, league))
-                exit(2)
-            else:
-                values = { 'division' : division_name,
-                           'data' : json.dumps(extract_matches(book, league)) }
-                data = urllib.urlencode(values)
-                req = urllib2.Request("{}/save.cgi".format(args.url), data)
-                response = urllib2.urlopen(req)
-                print "Saved %s: %r" % (division_name, json.loads(response.read()))
-        else:
-            print "Can't create already existing division {}".format(division_name)
+    division_name = make_division_name(args, i)
+    url = "{}/load.cgi?division={}".format(args.url, division_name)
+    response = urllib2.urlopen(url)
+    d = json.load(response)
+    if d[0] == '':
+        if (args.describe):
+            print "NOT IMPLEMENTED"
+            print json.dumps(extract_matches(current_book, league))
             exit(2)
-
-    elif (args.update):
-        division_name = make_division_name(i)
-        url = "{}/load.cgi?division={}".format(args.url, division_name)
-        response = urllib2.urlopen(url)
-        d = json.load(response)
-        if d[0] != '':
-            if (args.describe):
-                walk_and_describe_updates(d[4], extract_results(book, league))
-            else:
-                changed = walk_and_update_matches(d[4], extract_results(book, league))
-                if (changed):
-                    values = { 'division' : division_name,
-                               'parent' : d[0],
-                               'data' : json.dumps(d[4]) }
-                    data = urllib.urlencode(values)
-                    req = urllib2.Request("{}/save.cgi".format(args.url), data)
-                    response = urllib2.urlopen(req)
-                    print "Updated: %s" % response.read().strip()
-                else:
-                    print "No change: {}".format(division_name)
-
         else:
-            print "Can't update non existing division {}".format(division_name)
-            exit(2)
+            values = { 'division' : division_name,
+                       'data' : json.dumps(extract_matches(current_book, league)) }
+            data = urllib.urlencode(values)
+            req = urllib2.Request("{}/save.cgi".format(args.url), data)
+            response = urllib2.urlopen(req)
+            print "Saved %s: %r" % (division_name, json.loads(response.read()))
+    else:
+        print "Warning: can't create already existing division {}".format(division_name)
 
-    elif (args.reset):
-        division_name = make_division_name(i)
-        url = "{}/load.cgi?division={}".format(args.url, division_name)
-        print "Loading URL {}".format(url)
-        response = urllib2.urlopen(url)
-        d = json.load(response)
-        if d[0] != '':
-            changed = walk_and_reset(d[4], extract_results(book, league))
+def main_update(args, current_book, new_book, i, ctx):
+    league = "L"+str(i)
+    division_name = make_division_name(i)
+    url = "{}/load.cgi?division={}".format(args.url, division_name)
+    response = urllib2.urlopen(url)
+    d = json.load(response)
+    if d[0] != '':
+        if (args.describe):
+            walk_and_describe_updates(d[4], extract_results(new_book, league))
+        else:
+            changed = walk_and_update_matches(d[4], extract_results(new_book, league))
             if (changed):
                 values = { 'division' : division_name,
                            'parent' : d[0],
@@ -217,6 +166,99 @@ for i in range(1,25):
                 req = urllib2.Request("{}/save.cgi".format(args.url), data)
                 response = urllib2.urlopen(req)
                 print "Updated: %s" % response.read().strip()
+            else:
+                print "No change: {}".format(division_name)
+
+    else:
+        print "Can't update non existing division {}".format(division_name)
+        exit(2)
+
+def main_reset(args, current_book, new_book, i, ctx):
+    league = "L"+str(i)
+    division_name = make_division_name(i)
+    url = "{}/load.cgi?division={}".format(args.url, division_name)
+    print "Loading URL {}".format(url)
+    response = urllib2.urlopen(url)
+    d = json.load(response)
+    if d[0] != '':
+        changed = walk_and_reset(d[4], extract_results(new_book, league))
+        if (changed):
+            values = { 'division' : division_name,
+                       'parent' : d[0],
+                       'data' : json.dumps(d[4]) }
+            data = urllib.urlencode(values)
+            req = urllib2.Request("{}/save.cgi".format(args.url), data)
+            response = urllib2.urlopen(req)
+            print "Updated: %s" % response.read().strip()
+    else:
+        print "Not implemented"
+        exit(2)
+
+def init_export(args, current_book, new_book, ctx):
+    fn = "{}-{}-{:02d}.csv".format(args.prefix, args.season, args.round)
+    print "Writing results to {}".format(fn)
+    ctx["out"] = open(fn, 'wb')
+    ctx["writer"] = unicodecsv.writer(ctx["out"])
+    ctx["writer"].writerow(["season","round","division","date","time","court","player1","player2","result1","result2"])
+
+def main_export(args, current_book, new_book, i, ctx):
+    league = "L"+str(i)
+    matches = extract_matches(current_book, league)['games']
+    for result in extract_results(new_book, league):
+        m = None
+        for match in matches:
+            if match[0] == result[0] and match[1] == result[1]:
+                m = match
+                break
+        outresult = [args.season, args.round, i]
+        if (m):
+            outresult.extend(m[4:])
         else:
-            print "Not implemented"
-            exit(2)
+            raise Exception("Couldn't find match for result {}".format(result))
+        outresult.extend(result)
+        ctx["writer"].writerow(outresult)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--season", required=True, type=str)
+    parser.add_argument("--round", required=True, type=int)
+    parser.add_argument("--current-file", required=True, type=str)
+    parser.add_argument("--new-file", required=True, type=str)
+    subparsers = parser.add_subparsers()
+
+    parser_new = subparsers.add_parser('new')
+    parser_new.set_defaults(func=main_new)
+    parser_new.add_argument("--describe", action='store_true')
+    parser_new.add_argument("--url", required=True)
+
+    parser_update = subparsers.add_parser('update')
+    parser_update.set_defaults(func=main_update)
+    parser_update.add_argument("--describe", action='store_true')
+    parser_update.add_argument("--url", required=True)
+
+    parser_reset = subparsers.add_parser('reset')
+    parser_reset.set_defaults(func=main_reset)
+    parser_reset.add_argument("--url", required=True)
+
+    parser_export = subparsers.add_parser('export')
+    parser_export.add_argument("--prefix", required=True)
+    parser_export.set_defaults(init=init_export)
+    parser_export.set_defaults(func=main_export)
+
+    args = parser.parse_args()
+
+    ctx = {}
+
+    print "Reading from {}".format(args.current_file)
+    current_book = pyexcel.get_book(file_name=args.current_file)
+    print "Reading from {}".format(args.new_file)
+    new_book = pyexcel.get_book(file_name=args.new_file)
+
+    if hasattr(args, 'init'):
+        args.init(args, current_book, new_book, ctx)
+    for i in range(1,25):
+        args.func(args, current_book, new_book, i, ctx)
+
+if __name__ == "__main__":
+    main()
+
