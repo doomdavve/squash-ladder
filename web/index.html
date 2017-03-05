@@ -524,7 +524,7 @@ function build_ui_area() {
     round.games.forEach(function(game, i) {
         if (i % 3 == 0) {
             var tr = document.createElement('tr');
-            var header = ((game[4] || "") + " " + (game[5] || ""));
+            var header = (game[4] || "");
             tr.innerHTML = `<th colspan=5><h2>${header}</h2>`;
             table.appendChild(tr);
         }
@@ -535,7 +535,8 @@ function build_ui_area() {
         tr.innerHTML = `
             <td>${make_player_link(game[0])}</td>
             <td>${make_player_link(game[1])}</td>
-            <td>Bana ${game[6] || "x"}</td>
+            <td>Bana ${game[6] || "?"}</td>
+            <td>${game[5] || ""}<td>
             <td>
                 <input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}>
             </td>
