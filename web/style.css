@@ -94,6 +94,10 @@ input.p1, input.p2 {
     margin: 1em;
     float: right;
 }
+.results {
+    margin: 1em;
+    float: right;
+}
 .edit {
     margin: 1em;
     float: right;

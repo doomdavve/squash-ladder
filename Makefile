@@ -1,4 +1,5 @@
-WEB_FILES=index.html player.html list.cgi load.cgi save.cgi dump.cgi favicon.png style.css
+WEB_FILES=index.html player.html list.cgi load.cgi save.cgi dump.cgi \
+	favicon.png style.css results.cgi
 PREFIXED_WEB_FILES=$(addprefix web/,$(WEB_FILES))
 TOOL_FILES=tracker.py
 PREFIXED_TOOL_FILES=$(addprefix tools/,$(TOOL_FILES))

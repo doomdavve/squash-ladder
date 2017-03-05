@@ -14,7 +14,8 @@
     </div>
     <div class="uiarea"></div>
     <div class="admin">
-        <div class="dump"><a href="dump.cgi" download>Ladda ner databas</a></div>
+        <div class="dump"><a href="dump.cgi" download>Databas</a></div>
+        <div class="results"></div>
         <div class="edit"><a href="">Editera rådata</a></div>
         <div class="editui">
             <textarea></textarea>
@@ -389,6 +390,50 @@ function update_list() {
                     yearselect.options[yearselect.options.length - 1].selected = true;
 
                 update_roundnr();
+
+                if (admin) {
+                    var resultsroot = document.querySelector('.admin .results');
+                    resultsroot.innerHTML = 'Hämta resultat: ';
+
+                    var select = document.createElement('select');
+                    var opt = document.createElement('option');
+                    opt.textContent = '---';
+                    opt.value = '---';
+                    select.add(opt);
+
+                    for (var season of Object.keys(years)) {
+                        for (var round of Object.keys(years[season])) {
+                            var opt = document.createElement('option');
+                            opt.textContent = season + " | " + round;
+                            opt.value = season + "," + round;
+                            select.add(opt);
+                        }
+                    }
+                    select.onchange = function() {
+                        if (this.value == '---')
+                            return;
+                        var arr = this.value.split(',');
+
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', 'results.cgi');
+                        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                        xhr.onload = function () {
+                            var a = document.createElement("a");
+                            resultsroot.appendChild(a);
+                            a.style = "display: none";
+                            var res = this.responseText;
+                            var blob = new Blob([res], {type: "text/csv"}),
+                                url = window.URL.createObjectURL(blob);
+                            a.href = url;
+                            a.download = "Squash_league_results-" + arr[0] + "-" + arr[1] + ".csv";
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                        };
+                        xhr.send('season=' + arr[0] + '&round=' + arr[1]);
+                    }
+                    resultsroot.appendChild(select);
+                }
+
             }
         });
 }
