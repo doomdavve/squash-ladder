@@ -487,14 +487,24 @@ function build_ui_area() {
         var tr = document.createElement('tr');
         tr.setAttribute("data-game-idx", i);
 
-        tr.innerHTML = `<td>${make_player_link(game[0])}<td>${make_player_link(game[1])}<td>Bana ${game[6] || "x"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
+        tr.innerHTML = `
+            <td>${make_player_link(game[0])}</td>
+            <td>${make_player_link(game[1])}</td>
+            <td>Bana ${game[6] || "x"}</td>
+            <td>
+                <input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}>
+            </td>
+            <td>
+                <input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>
+            </td>
+        `;
 
         tr.querySelector('input.p1').onfocus = function () {
-                        selectInputText(this)
+            selectInputText(this)
         };
 
         tr.querySelector('input.p2').onfocus = function () {
-                        selectInputText(this)
+            selectInputText(this)
         };
 
         tr.querySelector('input.p1').onchange = function () {
