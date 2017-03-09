@@ -8,7 +8,7 @@
 <div id="error"></div>
 <div class="ui">
     <div class="uibar">
-	<select id="yearselection"></select>
+    <select id="yearselection"></select>
         <select id="roundselection"></select>
         <label>#</label><select id="divisionselection"></select>
     </div>
@@ -43,14 +43,15 @@ var csv = function() {
 
     var calendarEvents = [];
     var calendarStart = [
-	"Subject",
-	"Start Date",
-	"Start Time",
-	"End Date",
-	"End Time",
-	"All Day Event",
-	"Description",
-	"Location"].join(',');
+        "Subject",
+        "Start Date",
+        "Start Time",
+        "End Date",
+        "End Time",
+        "All Day Event",
+        "Description",
+        "Location"
+    ].join(',');
 
     var saveData = (function () {
         var a = document.createElement("a");
@@ -89,18 +90,18 @@ var csv = function() {
             var start = start_year + start_month + start_day + start_time;
             var end = end_year + end_month + end_day + end_time;
 
-	    var start_time = [ start_hours, start_minutes, start_seconds ].join(':');
+            var start_time = [ start_hours, start_minutes, start_seconds ].join(':');
             var end_time = [ end_hours, end_minutes, end_seconds ].join(':');
 
             var calendarEvent = [
-		subject,
-		[ start_year, start_month, start_day].join("-"),
-		start_time,
-		[ end_year, end_month, end_day ].join("-"),
-		end_time,
-		'False',
-		description,
-		location
+                subject,
+                [ start_year, start_month, start_day].join("-"),
+                start_time,
+                [ end_year, end_month, end_day ].join("-"),
+                end_time,
+                'False',
+                description,
+                location
             ].join(',');
             calendarEvents.push(calendarEvent);
             return calendarEvent;
@@ -156,7 +157,7 @@ function addResults(results, scoreboard) {
     table.id = "results";
     var tablestring = "<tr><th title=\"Namn\">Namn<th title=\"Spelade\">S<th title=\"Vunna\">V<th title=\"Förlorade\">F<th title=\"Poäng\">P";
     for (var score of scoreboard)
-	tablestring += "<tr><td>" + make_player_link(score[0]) + "<td>" + score.slice(1).join("<td>");
+    tablestring += "<tr><td>" + make_player_link(score[0]) + "<td>" + score.slice(1).join("<td>");
     table.innerHTML = tablestring;
     results.appendChild(table);
 }
@@ -167,11 +168,11 @@ function updateResult(p1result, p2result, p1points, p2points) {
     p2result.points += p2points;
     p2result.nentries++;
     if (p1points > p2points) {
-	p2result.lost++;
-	p1result.won++;
+        p2result.lost++;
+        p1result.won++;
     } else if (p1points < p2points) {
-	p1result.lost++;
-	p2result.won++;
+        p1result.lost++;
+        p2result.won++;
     }
 }
 
@@ -179,55 +180,55 @@ function computeResults(round) {
     var result = {};
 
     if (!round.hasOwnProperty('players'))
-	throw "'players' array missing";
+    throw "'players' array missing";
 
     // Reset values
     for (var player of round.players) {
-	if (result.hasOwnProperty(player))
+        if (result.hasOwnProperty(player))
             throw "Duplicate player name: " + player;
 
-	result[player] = { nentries: 0, points: 0, won: 0, lost: 0 };
+        result[player] = { nentries: 0, points: 0, won: 0, lost: 0 };
     }
 
     if (!round.hasOwnProperty('games'))
-	throw "'games' array missing";
+    throw "'games' array missing";
 
     // Score played matches into results.
 
     for (var game of round.games) {
-	if (game.length < 4)
-            throw "Match med för få fält";
+        if (game.length < 4)
+                throw "Match med för få fält";
 
-	var name1 = game[0],
-            name2 = game[1],
-            result1 = game[2],
-            result2 = game[3];
+        var name1 = game[0],
+                name2 = game[1],
+                result1 = game[2],
+                result2 = game[3];
 
-	if (result[name1] === undefined)
-            throw "Spelare " + name1 + " är okänd";
+        if (result[name1] === undefined)
+                throw "Spelare " + name1 + " är okänd";
 
-	if (result[name2] === undefined)
-            throw "Spelare " + name2 + " är okänd";
+        if (result[name2] === undefined)
+                throw "Spelare " + name2 + " är okänd";
 
-	if (result[name1] === result[name2])
-            throw "Spelare " + name1 + " kan inte spela mot sig själv";
+        if (result[name1] === result[name2])
+                throw "Spelare " + name1 + " kan inte spela mot sig själv";
 
         if (result1 == 'W') {
-	    updateResult(result[name1], result[name2], -2, 4);
-	} else if (result2 == 'W') {
-	    updateResult(result[name1], result[name2], 4, -2);
-	} else if (isNumeric(result1) && isNumeric(result2)) {
+            updateResult(result[name1], result[name2], -2, 4);
+        } else if (result2 == 'W') {
+            updateResult(result[name1], result[name2], 4, -2);
+        } else if (isNumeric(result1) && isNumeric(result2)) {
 
             if (result1 == 0 && result2 == 0)
                 // For now assume match not played yet; do nothing
                 continue;
 
             if (result1 < 0 || result1 > 3)
-		throw "Resultat '" + result1 + "' är ogiltigt";
+                throw "Resultat '" + result1 + "' är ogiltigt";
             if (result2 < 0 || result2 > 3)
-		throw "Resultat '" + result2 + "' är ogiltigt";
+                throw "Resultat '" + result2 + "' är ogiltigt";
             if (result1 + result2 > 5)
-		throw "Resultat '" + result1 + "-" + result2 + "' är ogiltigt";
+                throw "Resultat '" + result1 + "-" + result2 + "' är ogiltigt";
 
             // First award each player with one point for participating.
             var p1points = 1;
@@ -237,13 +238,13 @@ function computeResults(round) {
             p1points += result1;
             p2points += result2;
 
-            // Give an extra point to the winner.
+                // Give an extra point to the winner.
             if (result1 == 3)
-		p1points++;
+                p1points++;
             else if (result2 == 3)
-		p2points++;
-	    updateResult(result[name1], result[name2], p1points, p2points);
-	}
+                p2points++;
+            updateResult(result[name1], result[name2], p1points, p2points);
+        }
     }
 
     // Now convert results into a sorted list of results.
@@ -251,28 +252,28 @@ function computeResults(round) {
     var arr = [];
 
     for (var name in result)
-	arr.push([name, result[name].nentries, result[name].won, result[name].lost, result[name].points]);
+        arr.push([name, result[name].nentries, result[name].won, result[name].lost, result[name].points]);
 
     arr.sort(function(a, b) {
-	var points1 = a[4];
-	var points2 = b[4];
-	if (points1 == points2) {
+    var points1 = a[4];
+    var points2 = b[4];
+    if (points1 == points2) {
             for (var game of round.games) {
-		var name1 = game[0],
+                var name1 = game[0],
                     name2 = game[1],
                     result1 = game[2],
                     result2 = game[3];
 
-		if ((name1 == a[0] && name2 == b[0]) ||
+                if ((name1 == a[0] && name2 == b[0]) ||
                     (name1 == b[0] && name2 == a[0]))
                     return result2 - result1;
             }
             // No played match between them. What to do? FIXME: Count games.
             console.log("Warning: could not break tie between " + a[0] + " and " + b[0] + ".");
             return Math.random() - 0.5;
-	} else {
+        } else {
             return points2 - points1;
-	}
+        }
     });
 
     var namearr = parse_division_name(division_name);
@@ -301,17 +302,17 @@ var round = {};
 
 function save() {
     if (!division_name)
-	return;
-    req("save.cgi",
-	function() {
-            if (this.readyState == 4 && this.status == 200) {
-                if (this.response)
-		    currenthash = this.response[0];
-                else
-	            errorblock.innerHTML = "Kunde inte spara!";
-            }
-	}, "division=" + encodeURIComponent(division_name) + "&parent=" +
-           encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(JSON.stringify(round)));
+    return;
+    req("save.cgi", function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.response)
+                currenthash = this.response[0];
+        else
+            errorblock.innerHTML = "Kunde inte spara!";
+        }
+    }, "division=" + encodeURIComponent(division_name) + "&parent=" +
+        encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(JSON.stringify(round))
+    );
 }
 
 function build_scoreboard() {
@@ -319,9 +320,9 @@ function build_scoreboard() {
     errorblock.innerHTML = "";
 
     try {
-	addResults(results, computeResults(round));
+        addResults(results, computeResults(round));
     } catch (e) {
-	errorblock.innerHTML = e;
+        errorblock.innerHTML = e;
         throw (e);
     }
 }
@@ -330,8 +331,8 @@ function on_round_changed() {
     errorblock.innerHTML = "";
 
     if (round == {}) {
-	errorblock.innerHTML = '<i>Empty round</i>';
-	return;
+        errorblock.innerHTML = '<i>Empty round</i>';
+        return;
     }
 
     build_ui_area();
@@ -342,7 +343,7 @@ function option(value, selected) {
     var x = document.createElement('option');
     x.text = value;
     if (value == selected)
-	x.selected = true;
+        x.selected = true;
     return x;
 }
 
@@ -350,48 +351,45 @@ function parse_division_name(division_name) {
     var re = /(\d\d\d\d-\d\d\d\d)-(\d\d)-(\d\d)/;
     var found = division_name.match(re);
     if (found)
-	return found.slice(1,4);
+        return found.slice(1,4);
     else
-	return null;
+        return null;
 }
 
 var years = {};
 
 function updateList() {
     var requested_year = division_name ? parse_division_name(division_name)[0] : 0;
-    req("list.cgi",
-	function() {
-            if (this.readyState == 4 && this.status == 200) {
-		years = {};
-
-		for (var iter of this.response) {
-                    var res = parse_division_name(iter);
-                    if (res) {
-			if (!years[res[0]])
-                            years[res[0]] = { };
-			if (!years[res[0]][res[1]])
-                            years[res[0]][res[1]] = [];
-			years[res[0]][res[1]].push(res[2]);
-                    }
-		}
-
-		for (var year of Object.keys(years)) {
-                    yearselect.add(option(year, requested_year));
-		}
-
-                if (!division_name)
-                    yearselect.options[yearselect.options.length - 1].selected = true;
-
-		update_roundnr();
+    req("list.cgi", function() {
+        if (this.readyState == 4 && this.status == 200) {
+            years = {};
+            for (var iter of this.response) {
+                var res = parse_division_name(iter);
+            if (res) {
+                if (!years[res[0]])
+                    years[res[0]] = { };
+                if (!years[res[0]][res[1]])
+                    years[res[0]][res[1]] = [];
+                years[res[0]][res[1]].push(res[2]);
             }
-	});
+        }
+
+        for (var year of Object.keys(years)) {
+            yearselect.add(option(year, requested_year));
+        }
+
+        if (!division_name)
+            yearselect.options[yearselect.options.length - 1].selected = true;
+            update_roundnr();
+        }
+    });
 }
 
 function update_roundnr(event) {
     var requested_roundnr = division_name ? parse_division_name(division_name)[1] : 0;
     roundselect.innerHTML = '';
     for (var round of Object.keys(years[yearselect.value])) {
-	roundselect.add(option(round, requested_roundnr));
+        roundselect.add(option(round, requested_roundnr));
     }
     if (!division_name)
         roundselect.options[roundselect.options.length - 1].selected = true;
@@ -402,7 +400,7 @@ function update_divisionnr(event) {
     var requested_divisionnr = division_name ? parse_division_name(division_name)[2] : 0;
     divisionselect.innerHTML = '';
     for (var divisionnr of years[yearselect.value][roundselect.value].sort(function(a,b){return a - b})) {
-	divisionselect.add(option(divisionnr, requested_divisionnr));
+        divisionselect.add(option(divisionnr, requested_divisionnr));
     }
     update_round(event);
 }
@@ -411,27 +409,25 @@ function update_round(event) {
     if (event || !division_name) {
         division_name = yearselect.value + "-" + roundselect.value + "-" + divisionselect.value;
         document.location.hash = division_name;
-
         load_round();
     }
 }
 
 function load_round() {
-    req("load.cgi?division=" + division_name,
-	function() {
-            if (this.readyState == 4 && this.status == 200) {
-		try {
-                    round = this.response[4];
-                    if (admin)
-                        document.querySelector('.editui textarea').value = JSON.stringify(round);
-                    currenthash = this.response[0];
-                    on_round_changed();
-		} catch (e) {
-                    errorblock.innerHTML = e;
-                    throw(e);
-		}
+    req("load.cgi?division=" + division_name, function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                round = this.response[4];
+                if (admin)
+                    document.querySelector('.editui textarea').value = JSON.stringify(round);
+                currenthash = this.response[0];
+                on_round_changed();
+            } catch (e) {
+                errorblock.innerHTML = e;
+                throw(e);
             }
-	});
+        }
+    });
 }
 
 function setup_raw_edit() {
@@ -443,18 +439,17 @@ function setup_raw_edit() {
 
     document.querySelector('.editui input[type=submit]').onclick = function() {
         var data = document.querySelector('.editui textarea').value;
-        req("save.cgi",
-	    function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    if (this.response) {
-		        currenthash = this.response[0];
-                        load_round();
-                    }
-                    else
-	                errorblock.innerHTML = "Kunde inte spara!";
+        req("save.cgi", function() {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.response) {
+                    currenthash = this.response[0];
+                    load_round();
                 }
-	    }, "division=" + encodeURIComponent(division_name) + "&parent=" +
-               encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(data));
+                else
+                    errorblock.innerHTML = "Kunde inte spara!";
+            }
+        }, "division=" + encodeURIComponent(division_name) + "&parent=" +
+            encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(data));
     }
 }
 
@@ -478,10 +473,10 @@ function build_ui_area() {
             table.appendChild(tr);
         }
 
-	var tr = document.createElement('tr');
-	tr.setAttribute("data-game-idx", i);
+        var tr = document.createElement('tr');
+        tr.setAttribute("data-game-idx", i);
 
-	tr.innerHTML = `<td>${make_player_link(game[0])}<td>${make_player_link(game[1])}<td>Bana ${game[6] || "x"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
+        tr.innerHTML = `<td>${make_player_link(game[0])}<td>${make_player_link(game[1])}<td>Bana ${game[6] || "x"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
 
         tr.querySelector('input.p1').onfocus = function () {
             this.setSelectionRange(0, this.value.length);
@@ -491,38 +486,37 @@ function build_ui_area() {
             this.setSelectionRange(0, this.value.length);
         };
 
-	tr.querySelector('input.p1').onchange = function () {
+        tr.querySelector('input.p1').onchange = function () {
             var gameidx = this.parentNode.parentNode.getAttribute("data-game-idx");
-	    if (this.value == 'W')
-		round.games[gameidx][2] = 'W';
-	    else if (this.value == '-')
-		round.games[gameidx][2] = '-';
+
+            if (this.value == 'W')
+                round.games[gameidx][2] = 'W';
+            else if (this.value == '-')
+                round.games[gameidx][2] = '-';
             else {
-		round.games[gameidx][2] = parseInt(this.value);
+                round.games[gameidx][2] = parseInt(this.value);
                 if (isNaN(round.games[gameidx][2]))
                     this.value = round.games[gameidx][2] = '-';
             }
-
             build_scoreboard();
             save();
-	};
+        };
 
-	tr.querySelector('input.p2').onchange = function () {
+        tr.querySelector('input.p2').onchange = function () {
             var gameidx = this.parentNode.parentNode.getAttribute("data-game-idx");
-	    if (this.value == 'W')
-		round.games[gameidx][3] = 'W';
-	    else if (this.value == '-')
+            if (this.value == 'W')
+                round.games[gameidx][3] = 'W';
+            else if (this.value == '-')
                 round.games[gameidx][3] = '-';
             else {
-		round.games[gameidx][3] = parseInt(this.value);
+                round.games[gameidx][3] = parseInt(this.value);
                 if (isNaN(round.games[gameidx][3]))
                     this.value = round.games[gameidx][3] = '-';
             }
-
             build_scoreboard();
             save();
-	};
-	table.appendChild(tr);
+        };
+        table.appendChild(tr);
     });
     uiarea.appendChild(table);
 
@@ -534,7 +528,7 @@ function build_ui_area() {
     option.textContent = "---";
     select.appendChild(option);
     round.players.forEach(function(player) {
-	var option = document.createElement('option');
+        var option = document.createElement('option');
         option.textContent = player;
         select.appendChild(option);
     });
@@ -543,19 +537,19 @@ function build_ui_area() {
         var player = event.target.value;
         if (player == "---")
             return;
-	var cal = csv();
-	round.games.forEach(function(game, i) {
-	    if (game[0] == player || game[1] == player) {
-		var date = game[4].replace("-", "/");
-		var begin = new Date(date + " " + game[5] + ":00");
-		var end = new Date(begin.getTime());
-		end.setMinutes(begin.getMinutes() + 45);
-		cal.addEvent(`${game[0]} - ${game[1]}`,
-			     `${game[0]} - ${game[1]} på bana ${game[6]}`,
-			     'Landala Squashhall', begin, end);
-	    }
-	});
-	cal.download(division_name + "_" + player.replace(/[^a-z0-9]/gi, '_').toLowerCase());
+        var cal = csv();
+        round.games.forEach(function(game, i) {
+            if (game[0] == player || game[1] == player) {
+                var date = game[4].replace("-", "/");
+                var begin = new Date(date + " " + game[5] + ":00");
+                var end = new Date(begin.getTime());
+                end.setMinutes(begin.getMinutes() + 45);
+                cal.addEvent(`${game[0]} - ${game[1]}`,
+                     `${game[0]} - ${game[1]} på bana ${game[6]}`,
+                     'Landala Squashhall', begin, end);
+            }
+        });
+        cal.download(division_name + "_" + player.replace(/[^a-z0-9]/gi, '_').toLowerCase());
     };
 
     div.appendChild(select);
