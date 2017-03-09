@@ -1,0 +1,9 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+[*.py]
+indent_style = spaces
+indent_size = 4
+
+[*.{js,html,css}]
+indent_style = spaces
+indent_size = 4
