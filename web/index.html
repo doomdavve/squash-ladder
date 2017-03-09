@@ -128,6 +128,12 @@ function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+function selectInputText(input) {
+	setTimeout(function() {
+		input.setSelectionRange(0, input.value.length);
+	}, 1);
+}
+
 function req(url, fun, params) {
     var http = new XMLHttpRequest();
     http.open(params ? "POST" : "GET", url, true);
@@ -484,11 +490,11 @@ function build_ui_area() {
 	tr.innerHTML = `<td>${make_player_link(game[0])}<td>${make_player_link(game[1])}<td>Bana ${game[6] || "x"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
 
         tr.querySelector('input.p1').onfocus = function () {
-            this.setSelectionRange(0, this.value.length);
+			selectInputText(this)
         };
 
         tr.querySelector('input.p2').onfocus = function () {
-            this.setSelectionRange(0, this.value.length);
+			selectInputText(this)
         };
 
 	tr.querySelector('input.p1').onchange = function () {
