@@ -50,7 +50,8 @@ var csv = function() {
         "End Time",
         "All Day Event",
         "Description",
-        "Location"].join(',');
+        "Location"
+    ].join(',');
 
     var saveData = (function () {
         var a = document.createElement("a");
@@ -308,16 +309,16 @@ var round = {};
 function save() {
     if (!division_name)
         return;
-    req("save.cgi",
-        function() {
-            if (this.readyState == 4 && this.status == 200) {
-                if (this.response)
-                    currenthash = this.response[0];
-                else
-                    errorblock.innerHTML = "Kunde inte spara!";
-            }
-        }, "division=" + encodeURIComponent(division_name) + "&parent=" +
-           encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(JSON.stringify(round)));
+    req("save.cgi", function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.response)
+                currenthash = this.response[0];
+        else
+            errorblock.innerHTML = "Kunde inte spara!";
+        }
+    }, "division=" + encodeURIComponent(division_name) + "&parent=" +
+        encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(JSON.stringify(round))
+    );
 }
 
 function build_scoreboard() {
@@ -365,32 +366,29 @@ var years = {};
 
 function updateList() {
     var requested_year = division_name ? parse_division_name(division_name)[0] : 0;
-    req("list.cgi",
-        function() {
-            if (this.readyState == 4 && this.status == 200) {
-                years = {};
-
-                for (var iter of this.response) {
-                    var res = parse_division_name(iter);
-                    if (res) {
-                        if (!years[res[0]])
-                            years[res[0]] = { };
-                        if (!years[res[0]][res[1]])
-                            years[res[0]][res[1]] = [];
-                        years[res[0]][res[1]].push(res[2]);
-                    }
-                }
-
-                for (var year of Object.keys(years)) {
-                    yearselect.add(option(year, requested_year));
-                }
-
-                if (!division_name)
-                    yearselect.options[yearselect.options.length - 1].selected = true;
-
-                update_roundnr();
+    req("list.cgi", function() {
+        if (this.readyState == 4 && this.status == 200) {
+            years = {};
+            for (var iter of this.response) {
+                var res = parse_division_name(iter);
+            if (res) {
+                if (!years[res[0]])
+                    years[res[0]] = { };
+                if (!years[res[0]][res[1]])
+                    years[res[0]][res[1]] = [];
+                years[res[0]][res[1]].push(res[2]);
             }
-        });
+        }
+
+        for (var year of Object.keys(years)) {
+            yearselect.add(option(year, requested_year));
+        }
+
+        if (!division_name)
+            yearselect.options[yearselect.options.length - 1].selected = true;
+            update_roundnr();
+        }
+    });
 }
 
 function update_roundnr(event) {
@@ -417,27 +415,25 @@ function update_round(event) {
     if (event || !division_name) {
         division_name = yearselect.value + "-" + roundselect.value + "-" + divisionselect.value;
         document.location.hash = division_name;
-
         load_round();
     }
 }
 
 function load_round() {
-    req("load.cgi?division=" + division_name,
-        function() {
-            if (this.readyState == 4 && this.status == 200) {
-                try {
-                    round = this.response[4];
-                    if (admin)
-                        document.querySelector('.editui textarea').value = JSON.stringify(round);
-                    currenthash = this.response[0];
-                    on_round_changed();
-                } catch (e) {
-                    errorblock.innerHTML = e;
-                    throw(e);
-                }
+    req("load.cgi?division=" + division_name, function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                round = this.response[4];
+                if (admin)
+                    document.querySelector('.editui textarea').value = JSON.stringify(round);
+                currenthash = this.response[0];
+                on_round_changed();
+            } catch (e) {
+                errorblock.innerHTML = e;
+                throw(e);
             }
-        });
+        }
+    });
 }
 
 function setup_raw_edit() {
@@ -449,18 +445,17 @@ function setup_raw_edit() {
 
     document.querySelector('.editui input[type=submit]').onclick = function() {
         var data = document.querySelector('.editui textarea').value;
-        req("save.cgi",
-            function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    if (this.response) {
-                        currenthash = this.response[0];
-                        load_round();
-                    }
-                    else
-                        errorblock.innerHTML = "Kunde inte spara!";
+        req("save.cgi", function() {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.response) {
+                    currenthash = this.response[0];
+                    load_round();
                 }
-            }, "division=" + encodeURIComponent(division_name) + "&parent=" +
-               encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(data));
+                else
+                    errorblock.innerHTML = "Kunde inte spara!";
+            }
+        }, "division=" + encodeURIComponent(division_name) + "&parent=" +
+            encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(data));
     }
 }
 
@@ -487,7 +482,17 @@ function build_ui_area() {
         var tr = document.createElement('tr');
         tr.setAttribute("data-game-idx", i);
 
-        tr.innerHTML = `<td>${make_player_link(game[0])}<td>${make_player_link(game[1])}<td>Bana ${game[6] || "x"}<td><input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}><td><input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>`;
+        tr.innerHTML = `
+            <td>${make_player_link(game[0])}</td>
+            <td>${make_player_link(game[1])}</td>
+            <td>Bana ${game[6] || "x"}</td>
+            <td>
+                <input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}>
+            </td>
+            <td>
+                <input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>
+            </td>
+        `;
 
         tr.querySelector('input.p1').onfocus = function () {
                         selectInputText(this)
@@ -499,6 +504,7 @@ function build_ui_area() {
 
         tr.querySelector('input.p1').onchange = function () {
             var gameidx = this.parentNode.parentNode.getAttribute("data-game-idx");
+
             if (this.value == 'W')
                 round.games[gameidx][2] = 'W';
             else if (this.value == '-')
@@ -508,7 +514,6 @@ function build_ui_area() {
                 if (isNaN(round.games[gameidx][2]))
                     this.value = round.games[gameidx][2] = '-';
             }
-
             build_scoreboard();
             save();
         };
@@ -524,7 +529,6 @@ function build_ui_area() {
                 if (isNaN(round.games[gameidx][3]))
                     this.value = round.games[gameidx][3] = '-';
             }
-
             build_scoreboard();
             save();
         };
@@ -556,9 +560,12 @@ function build_ui_area() {
                 var begin = new Date(date + " " + game[5] + ":00");
                 var end = new Date(begin.getTime());
                 end.setMinutes(begin.getMinutes() + 45);
-                cal.addEvent(`${game[0]} - ${game[1]}`,
-                             `${game[0]} - ${game[1]} på bana ${game[6]}`,
-                             'Landala Squashhall', begin, end);
+                cal.addEvent(
+                    `${game[0]} - ${game[1]}`,
+                    `${game[0]} - ${game[1]} på bana ${game[6]}`,
+                    'Landala Squashhall', begin, end
+                );
+
             }
         });
         cal.download(division_name + "_" + player.replace(/[^a-z0-9]/gi, '_').toLowerCase());
