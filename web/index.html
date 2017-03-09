@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="style.css" rel="stylesheet">
 <div id="resultswrapper"><div id="results"></div></div>
-<div id="error"></div>
+<p style="text-align:center; color: red">Obs! Tid och bana stämmer inte för senaste omgången, 2016/2017 omgång 5!</p><div id="error"></div>
 <div class="ui">
     <div class="uibar">
-    <select id="yearselection"></select>
+        <select id="yearselection"></select>
         <select id="roundselection"></select>
         <label>#</label><select id="divisionselection"></select>
     </div>
@@ -129,6 +129,12 @@ function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+function selectInputText(input) {
+        setTimeout(function() {
+                input.setSelectionRange(0, input.value.length);
+        }, 1);
+}
+
 function req(url, fun, params) {
     var http = new XMLHttpRequest();
     http.open(params ? "POST" : "GET", url, true);
@@ -157,7 +163,7 @@ function addResults(results, scoreboard) {
     table.id = "results";
     var tablestring = "<tr><th title=\"Namn\">Namn<th title=\"Spelade\">S<th title=\"Vunna\">V<th title=\"Förlorade\">F<th title=\"Poäng\">P";
     for (var score of scoreboard)
-    tablestring += "<tr><td>" + make_player_link(score[0]) + "<td>" + score.slice(1).join("<td>");
+        tablestring += "<tr><td>" + make_player_link(score[0]) + "<td>" + score.slice(1).join("<td>");
     table.innerHTML = tablestring;
     results.appendChild(table);
 }
@@ -180,7 +186,7 @@ function computeResults(round) {
     var result = {};
 
     if (!round.hasOwnProperty('players'))
-    throw "'players' array missing";
+        throw "'players' array missing";
 
     // Reset values
     for (var player of round.players) {
@@ -191,27 +197,27 @@ function computeResults(round) {
     }
 
     if (!round.hasOwnProperty('games'))
-    throw "'games' array missing";
+        throw "'games' array missing";
 
     // Score played matches into results.
 
     for (var game of round.games) {
         if (game.length < 4)
-                throw "Match med för få fält";
+            throw "Match med för få fält";
 
         var name1 = game[0],
-                name2 = game[1],
-                result1 = game[2],
-                result2 = game[3];
+            name2 = game[1],
+            result1 = game[2],
+            result2 = game[3];
 
         if (result[name1] === undefined)
-                throw "Spelare " + name1 + " är okänd";
+            throw "Spelare " + name1 + " är okänd";
 
         if (result[name2] === undefined)
-                throw "Spelare " + name2 + " är okänd";
+            throw "Spelare " + name2 + " är okänd";
 
         if (result[name1] === result[name2])
-                throw "Spelare " + name1 + " kan inte spela mot sig själv";
+            throw "Spelare " + name1 + " kan inte spela mot sig själv";
 
         if (result1 == 'W') {
             updateResult(result[name1], result[name2], -2, 4);
@@ -238,7 +244,7 @@ function computeResults(round) {
             p1points += result1;
             p2points += result2;
 
-                // Give an extra point to the winner.
+            // Give an extra point to the winner.
             if (result1 == 3)
                 p1points++;
             else if (result2 == 3)
@@ -255,9 +261,9 @@ function computeResults(round) {
         arr.push([name, result[name].nentries, result[name].won, result[name].lost, result[name].points]);
 
     arr.sort(function(a, b) {
-    var points1 = a[4];
-    var points2 = b[4];
-    if (points1 == points2) {
+        var points1 = a[4];
+        var points2 = b[4];
+        if (points1 == points2) {
             for (var game of round.games) {
                 var name1 = game[0],
                     name2 = game[1],
@@ -302,7 +308,7 @@ var round = {};
 
 function save() {
     if (!division_name)
-    return;
+        return;
     req("save.cgi", function() {
         if (this.readyState == 4 && this.status == 200) {
             if (this.response)
@@ -489,11 +495,11 @@ function build_ui_area() {
         `;
 
         tr.querySelector('input.p1').onfocus = function () {
-            this.setSelectionRange(0, this.value.length);
+                        selectInputText(this)
         };
 
         tr.querySelector('input.p2').onfocus = function () {
-            this.setSelectionRange(0, this.value.length);
+                        selectInputText(this)
         };
 
         tr.querySelector('input.p1').onchange = function () {
@@ -554,9 +560,12 @@ function build_ui_area() {
                 var begin = new Date(date + " " + game[5] + ":00");
                 var end = new Date(begin.getTime());
                 end.setMinutes(begin.getMinutes() + 45);
-                cal.addEvent(`${game[0]} - ${game[1]}`,
-                     `${game[0]} - ${game[1]} på bana ${game[6]}`,
-                     'Landala Squashhall', begin, end);
+                cal.addEvent(
+                    `${game[0]} - ${game[1]}`,
+                    `${game[0]} - ${game[1]} på bana ${game[6]}`,
+                    'Landala Squashhall', begin, end
+                );
+
             }
         });
         cal.download(division_name + "_" + player.replace(/[^a-z0-9]/gi, '_').toLowerCase());
