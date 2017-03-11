@@ -145,7 +145,7 @@ function req(url, fun, params) {
 }
 
 function make_player_link(player) {
-    return `<a tabindex=-1 href="player.html?${player}">${player}</a>`;
+    return '<a tabindex=-1 href="player.html?' + player + '">' + player + '</a>';
 }
 
 function addResults(results, scoreboard) {
@@ -525,32 +525,27 @@ function build_ui_area() {
         if (i % 3 == 0) {
             var tr = document.createElement('tr');
             var header = (game[4] || "");
-            tr.innerHTML = `<th colspan=5><h2>${header}</h2>`;
+            tr.innerHTML = '<th colspan=5><h2>' + header + '</h2>';
             table.appendChild(tr);
         }
 
         var tr = document.createElement('tr');
         tr.setAttribute("data-game-idx", i);
 
-        tr.innerHTML = `
-            <td>${make_player_link(game[0])}</td>
-            <td>${make_player_link(game[1])}</td>
-            <td>Bana ${game[6] || "?"}</td>
-            <td>${game[5] || ""}<td>
-            <td>
-                <input class="p1" pattern="^[-wW\\d]$" size=2 value=${game[2]}>
-            </td>
-            <td>
-                <input class="p2" pattern="^[-wW\\d]$" size=2 value=${game[3]}>
-            </td>
-        `;
+        tr.innerHTML = '<td>' + make_player_link(game[0]) + '</td>' +
+                       '<td>' + make_player_link(game[1]) + '</td>' +
+                       '<td>Bana ' + (game[6] || "?") + '</td>' +
+                       '<td>' + (game[5] || "") + '<td>' +
+                       '<td><input class="p1" size=2 value="' + game[2] + '"></td>' +
+                       '</td><td>' +
+                       '<td><input class="p2" size=2 value="' + game[3] + '"></td>';
 
         tr.querySelector('input.p1').onfocus = function () {
-            selectInputText(this)
+            selectInputText(this);
         };
 
         tr.querySelector('input.p2').onfocus = function () {
-            selectInputText(this)
+            selectInputText(this);
         };
 
         tr.querySelector('input.p1').onchange = function () {
@@ -612,8 +607,8 @@ function build_ui_area() {
                 var begin = new Date(date + " " + game[5] + ":00");
                 var end = new Date(begin.getTime());
                 end.setMinutes(begin.getMinutes() + 45);
-                cal.addEvent(`${game[0]} - ${game[1]}`,
-                             `${game[0]} - ${game[1]} på bana ${game[6]}`,
+                cal.addEvent(game[0] + ' - ' + game[1],
+                             game[0] + ' - ' + game[1] + ' på bana ' + game[6],
                              'Landala Squashhall', begin, end);
             }
         });
