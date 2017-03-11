@@ -143,7 +143,7 @@ function selectInputText(input) {
 function req(url, fun, params) {
     var http = new XMLHttpRequest();
     http.open(params ? "POST" : "GET", url, true);
-    http.responseType = 'json';
+    // http.responseType = 'json';  // maybe some day...
     http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     http.onreadystatechange = fun;
     http.send(params);
@@ -161,8 +161,10 @@ function addResults(results, scoreboard) {
     var table = document.createElement('table');
     table.id = "results";
     var tablestring = "<tr><th title=\"Namn\">Namn<th title=\"Spelade\">S<th title=\"Vunna\">V<th title=\"Förlorade\">F<th title=\"Poäng\">P";
-    for (var score of scoreboard)
+    for (var i=0; i<scoreboard.length; i++) {
+        var score = scoreboard[i];
         tablestring += "<tr><td>" + make_player_link(score[0]) + "<td>" + score.slice(1).join("<td>");
+    }
     table.innerHTML = tablestring;
     results.appendChild(table);
 }
@@ -188,7 +190,8 @@ function computeResults(round) {
         throw "'players' array missing";
 
     // Reset values
-    for (var player of round.players) {
+    for (var i=0; i<round.players.length; i++) {
+        var player = round.players[i];
         if (result.hasOwnProperty(player))
             throw "Duplicate player name: " + player;
 
@@ -200,7 +203,8 @@ function computeResults(round) {
 
     // Score played matches into results.
 
-    for (var game of round.games) {
+    for (var i=0; i<round.games.length; i++) {
+        var game = round.games[i];
         if (game.length < 4)
             throw "Match med för få fält";
 
@@ -263,7 +267,8 @@ function computeResults(round) {
         var points1 = a[4];
         var points2 = b[4];
         if (points1 == points2) {
-            for (var game of round.games) {
+            for (var i=0; i<round.games.length; i++) {
+                var game = round.games[i];
                 var name1 = game[0],
                     name2 = game[1],
                     result1 = game[2],
@@ -309,7 +314,8 @@ function save() {
     req("save.cgi",
         function() {
             if (this.readyState == 4 && this.status == 200) {
-                if (this.response)
+                var response = json.parse(this.responseText);
+                if (response)
                     currenthash = this.response[0];
                 else
                     errorblock.innerHTML = "Kunde inte spara!";
@@ -368,8 +374,10 @@ function update_list() {
             if (this.readyState == 4 && this.status == 200) {
                 years = {};
 
-                for (var iter of this.response) {
-                    var res = parse_division_name(iter);
+                var response = JSON.parse(this.responseText);
+
+                for (var i=0; i<response.length; i++) {
+                    var res = parse_division_name(response[i]);
                     if (res) {
                         if (!years[res[0]])
                             years[res[0]] = { };
@@ -379,7 +387,8 @@ function update_list() {
                     }
                 }
 
-                for (var year of Object.keys(years)) {
+                for (var i=0; i<Object.keys(years).length; i++) {
+                    var year = Object.keys(years)[i];
                     yearselect.add(option(year, requested_year));
                 }
 
@@ -398,8 +407,10 @@ function update_list() {
                     opt.value = '---';
                     select.add(opt);
 
-                    for (var season of Object.keys(years)) {
-                        for (var round of Object.keys(years[season])) {
+                    for (var i=0; i<Object.keys(years).length; i++) {
+                        var season = Object.keys(years)[i];
+                        for (var j=0; j<Object.keys(years[season]); j++) {
+                            var round = Object.keys(years[season])[j];
                             var opt = document.createElement('option');
                             opt.textContent = season + " | " + round;
                             opt.value = season + "," + round;
@@ -438,7 +449,8 @@ function update_list() {
 function update_roundnr(event) {
     var requested_roundnr = division_name ? parse_division_name(division_name)[1] : 0;
     roundselect.innerHTML = '';
-    for (var round of Object.keys(years[yearselect.value])) {
+    for (var i=0; i<Object.keys(years[yearselect.value]).length; i++) {
+        var round = Object.keys(years[yearselect.value])[i];
         roundselect.add(option(round, requested_roundnr));
     }
     if (!division_name)
@@ -449,7 +461,9 @@ function update_roundnr(event) {
 function update_divisionnr(event) {
     var requested_divisionnr = division_name ? parse_division_name(division_name)[2] : 0;
     divisionselect.innerHTML = '';
-    for (var divisionnr of years[yearselect.value][roundselect.value].sort(function(a,b){return a - b})) {
+    var array = years[yearselect.value][roundselect.value].sort(function(a,b){return a - b});
+    for (var i=0; i<array.length; i++) {
+        var divisionnr = array[i];
         divisionselect.add(option(divisionnr, requested_divisionnr));
     }
     update_round(event);
@@ -469,10 +483,11 @@ function load_round() {
         function() {
             if (this.readyState == 4 && this.status == 200) {
                 try {
-                    round = this.response[4];
+                    var response = JSON.parse(this.responseText);
+                    round = response[4];
                     if (admin)
                         document.querySelector('.editui textarea').value = JSON.stringify(round);
-                    currenthash = this.response[0];
+                    currenthash = response[0];
                     on_round_changed();
                 } catch (e) {
                     errorblock.innerHTML = e;
@@ -494,8 +509,9 @@ function setup_raw_edit() {
         req("save.cgi",
             function() {
                 if (this.readyState == 4 && this.status == 200) {
-                    if (this.response) {
-                        currenthash = this.response[0];
+                    var response = JSON.parse(this.responseText);
+                    if (response) {
+                        currenthash = response[0];
                         load_round();
                     }
                     else
