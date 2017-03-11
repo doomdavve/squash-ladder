@@ -173,7 +173,7 @@ class PageState(object):
                     raise Exception("Duplicate entry: %6d, %6d, %s with %s" % (xcoord, ycoord, text.replace('\n', '\\n').encode('utf-8'), self.scanning_results[entry[0]]))
 
                 self.scanning_results[entry[0]] = text
-                print "accepted: '%s' as %s" % (text.replace('\n', '\\n').encode('utf-8'), entry[0])
+                #print "accepted: '%s' as %s" % (text.replace('\n', '\\n').encode('utf-8'), entry[0])
                 return
 
         raise Exception("Unexpected text: [%d, %d]: '%s'" %
@@ -206,7 +206,7 @@ class PageState(object):
                 if (m):
                     gametime = m.group(1)
                     gamecourse = m.group(2)
-                games.append([hp, ap, '-', '-', gamedate, gametime, gamecourse])
+                games.append([hp.decode('utf-8'), ap.decode('utf-8'), '-', '-', gamedate, gametime, gamecourse])
                 players.add(hp)
                 players.add(ap)
 
@@ -256,13 +256,12 @@ for i, page in enumerate(PDFPage.create_pages(document)):
             p.process_input(text[0], text[1], text[2].strip())
 
         r = p.calc_games()
-        json.dump(r, sys.stdout)
+        #json.dump(r, sys.stdout)
     except:
         print i
         raise
 
     url = "{}/load.cgi?division={}".format(args.url, p.division_name())
-    print url
     response = urllib2.urlopen(url)
     data = json.load(response)
 
@@ -274,3 +273,29 @@ for i, page in enumerate(PDFPage.create_pages(document)):
         req = urllib2.Request("{}/save.cgi".format(args.url), data)
         response = urllib2.urlopen(req)
         print "Saved: %s" % response.read()
+    else:
+        sha1 = data[0]
+        parent = data[1]
+        payload = data[4]
+
+        has_change = False
+
+        for i, oldgame in enumerate(payload["games"]):
+            for newgame in r["games"]:
+                if newgame[0] == oldgame[0] and newgame[1] == oldgame[1]:
+                    if newgame[5] != oldgame[5]:
+                        print "Adjusting difference in time: {} - {}".format(newgame[5], oldgame[5])
+                        oldgame[5] = newgame[5]
+                        has_change = True
+                    if int(newgame[6]) != int(oldgame[6]):
+                        print "Adjusting difference in court: {} - {}".format(newgame[6], oldgame[6])
+                        oldgame[6] = newgame[6]
+                        has_change = True
+        if has_change:
+            values = { 'parent' : sha1,
+                       'division' : p.division_name(),
+                       'data' : json.dumps(r) }
+            data = urllib.urlencode(values)
+            req = urllib2.Request("{}/save.cgi".format(args.url), data)
+            response = urllib2.urlopen(req)
+            print "Saved: %s" % response.read().strip()
