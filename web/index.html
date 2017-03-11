@@ -26,8 +26,13 @@
         Den här sidan kräver JavaScript.
     </noscript>
     <footer>
-        Ansvarig: <a href="mailto:davve@davve.net">davve@davve.net</a>. Sidan har ingen officiell anknytning till Team Göteborg SK.
-        <p><a href="https://twitter.com/landalasquash" class="twitter-follow-button" data-show-count="false">Följ @landalasquash</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+        Ansvarig: <a href="mailto:davve@davve.net">davve@davve.net</a>.
+        Sidan har ingen officiell anknytning till Team Göteborg SK.
+        <p><a href="https://twitter.com/landalasquash"
+              class="twitter-follow-button" data-show-count="false">
+            Följ @landalasquash</a>
+            <script async src="//platform.twitter.com/widgets.js"
+                    charset="utf-8"></script>
     </footer>
 </div>
 <script>
@@ -130,9 +135,9 @@ function isNumeric(n) {
 }
 
 function selectInputText(input) {
-        setTimeout(function() {
-                input.setSelectionRange(0, input.value.length);
-        }, 1);
+    requestAnimationFrame(function() {
+        input.setSelectionRange(0, input.value.length);
+    });
 }
 
 function req(url, fun, params) {
@@ -151,12 +156,6 @@ function make_player_link(player) {
 function addResults(results, scoreboard) {
     var h1 = document.createElement('h1');
     h1.textContent = scoreboard.shift();
-
-    var span = document.createElement('span');
-    span.style = "font-size: smaller; float:right";
-    span.textContent = scoreboard.shift();
-    h1.appendChild(span);
-
     results.appendChild(h1);
 
     var table = document.createElement('table');
@@ -283,10 +282,8 @@ function computeResults(round) {
     });
 
     var namearr = parse_division_name(division_name);
-    if (namearr) {
-        arr.unshift(namearr[0].replace("-", "/") + " | " + parseInt(namearr[1]));
-        arr.unshift(namearr[2]);
-    }
+    if (namearr)
+        arr.unshift(namearr[2] + " - " + namearr[0].replace("-", "/") + " | " + parseInt(namearr[1]));
 
     return arr;
 }

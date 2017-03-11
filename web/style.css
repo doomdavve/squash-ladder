@@ -78,6 +78,9 @@ td input {
     text-align: right;
     border: 1px dashed lightgrey;
     padding: 0.2em;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 .downloadcsv {
     margin: 1em;
@@ -89,6 +92,12 @@ input.p1, input.p2 {
 }
 .uiarea h2 {
     text-align: center;
+}
+@media only screen
+and (min-device-width : 375px)
+and (max-device-width : 667px) {
+    .uiarea td:nth-child(3) { display: none; }
+    .uiarea td:nth-child(4) { display: none; }
 }
 .dump {
     margin: 1em;
