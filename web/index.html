@@ -409,7 +409,7 @@ function update_list() {
 
                     for (var i=0; i<Object.keys(years).length; i++) {
                         var season = Object.keys(years)[i];
-                        for (var j=0; j<Object.keys(years[season]); j++) {
+                        for (var j=0; j<Object.keys(years[season]).length; j++) {
                             var round = Object.keys(years[season])[j];
                             var opt = document.createElement('option');
                             opt.textContent = season + " | " + round;
