@@ -43,7 +43,7 @@ function decide_winner_loser(match)
 {
     var has_winner = match[2] > match[3] || match[3] > match[2] || match[2] == 'W' || match[3] == 'W';
     if (has_winner) {
-        return (match[2] > match[3] || match[3] == 'W') ? match[0] : match[1];
+        return (match[2] > match[3] || match[2] == 'W') ? match[0] : match[1];
     } else {
         return "None"
     }
@@ -102,7 +102,7 @@ function arrange_match(match) {
     if (!has_winner)
         return match;
 
-    if ((match[2] > match[3] || match[3] == 'W')) {
+    if ((match[2] > match[3] || match[2] == 'W')) {
         return match;
     }
 

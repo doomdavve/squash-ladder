@@ -223,9 +223,9 @@ function computeResults(round) {
             throw "Spelare " + name1 + " kan inte spela mot sig själv";
 
         if (result1 == 'W') {
-            updateResult(result[name1], result[name2], -2, 4);
-        } else if (result2 == 'W') {
             updateResult(result[name1], result[name2], 4, -2);
+        } else if (result2 == 'W') {
+            updateResult(result[name1], result[name2], -2, 4);
         } else if (isNumeric(result1) && isNumeric(result2)) {
 
             if (result1 == 0 && result2 == 0)
@@ -288,7 +288,7 @@ function computeResults(round) {
 
     var namearr = parse_division_name(division_name);
     if (namearr)
-        arr.unshift(namearr[2] + " - " + namearr[0].replace("-", "/") + " | " + parseInt(namearr[1]));
+        arr.unshift(namearr[0].replace("-", "/") + "(" + parseInt(namearr[1]) + "): Div " + namearr[2]);
 
     return arr;
 }

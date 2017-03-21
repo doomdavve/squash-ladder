@@ -69,11 +69,11 @@ def walk_and_update_matches(data, results):
             if result[0] == match[0] and result[1] == match[1]:
                 newresult = [ '-', '-' ]
                 if (result[2] == -3 and result[3] == 0):
-                    newresult[0] = 3
-                    newresult[1] = 'W'
-                elif (result[2] == 0 and result[3] == -3):
                     newresult[0] = 'W'
-                    newresult[1] = 3
+                    newresult[1] = 0
+                elif (result[2] == 0 and result[3] == -3):
+                    newresult[0] = 0
+                    newresult[1] = 'W'
                 else:
                     newresult[0] = result[2]
                     newresult[1] = result[3]
@@ -102,11 +102,11 @@ def walk_and_describe_updates(data, results):
             if result[0] == match[0] and result[1] == match[1]:
                 newresult = [ '-', '-' ]
                 if (result[2] == -3 and result[3] == 0):
-                    newresult[0] = 3
-                    newresult[1] = 'W'
-                elif (result[2] == 0 and result[3] == -3):
                     newresult[0] = 'W'
-                    newresult[1] = 3
+                    newresult[1] = 0
+                elif (result[2] == 0 and result[3] == -3):
+                    newresult[0] = 0
+                    newresult[1] = 'W'
                 else:
                     newresult[0] = result[2]
                     newresult[1] = result[3]
@@ -115,9 +115,9 @@ def walk_and_describe_updates(data, results):
                     print "Up-to-date: {} - {}: {} - {}.".format(match[0].encode('utf-8'),
                                                                  match[1].encode('utf-8'),
                                                                  match[2], match[3])
-                elif (newresult[0] == '3' and newresult[1] == 'W'):
+                elif (newresult[0] == 'W' and newresult[1] == '0'):
                     print "Would set WO win for player one {}".format(match[0].encode('utf-8'))
-                elif (newresult[0] == 'W' and newresult[1] == '3'):
+                elif (newresult[0] == '0' and newresult[1] == 'W'):
                     print "Would set WO win for player two {}".format(match[1].encode('utf-8'))
                 else:
                     print "Would set between {} and {} to result {} - {}. (Was {} - {})".format(match[0].encode('utf-8'),

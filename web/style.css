@@ -20,6 +20,9 @@ table tr.unplayed {
 table td.current {
     font-weight: bold;
 }
+h1 {
+    font-size: 1.5em;
+}
 table h1 {
     color: hsl(215, 30%, 40%);
 }
@@ -94,7 +97,6 @@ input.p1, input.p2 {
     text-align: center;
 }
 @media only screen
-and (min-device-width : 375px)
 and (max-device-width : 667px) {
     .uiarea td:nth-child(3) { display: none; }
     .uiarea td:nth-child(4) { display: none; }
