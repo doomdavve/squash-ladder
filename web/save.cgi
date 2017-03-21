@@ -45,16 +45,20 @@ if (parent == assumedparent and form.getvalue('data')):
     hashedname = m.hexdigest()
     dataToDisk = False
 
-    with gzip.open(os.path.join("..", "data", "objects", hashedname), "wb") as cf:
-        cf.write(commit)
+    try:
+        with gzip.open(os.path.join("..", "data", "objects", hashedname), "wb") as cf:
+            cf.write(commit)
 
-        with open(os.path.join("..", "data", "divisions", division), "w") as hf:
-            hf.write(hashedname)
-            dataToDisk = True
+            with open(os.path.join("..", "data", "divisions", division), "w") as hf:
+                hf.write(hashedname)
+                dataToDisk = True
 
-    if (dataToDisk):
-        json.dump([hashedname], sys.stdout)
-    else:
-        json.dump([""], sys.stdout)
+        if (dataToDisk):
+            json.dump([hashedname], sys.stdout)
+        else:
+            json.dump([], sys.stdout)
+    except IOError:
+        json.dump([], sys.stdout)
+
 else:
-    json.dump([""], sys.stdout)
+    json.dump([], sys.stdout)
