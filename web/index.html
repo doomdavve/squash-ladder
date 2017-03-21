@@ -528,6 +528,11 @@ function update_division_name_from_hash() {
         load_round();
 }
 
+function build_select(classname) {
+    return '<select class=' + classname +
+           '><option>-<option>0<option>1<option>2<option>3<option>W</select>';
+}
+
 function build_ui_area() {
     var uiarea = document.querySelector('.uiarea');
     uiarea.innerHTML = '';
@@ -538,7 +543,7 @@ function build_ui_area() {
         if (i % 3 == 0) {
             var tr = document.createElement('tr');
             var header = (game[4] || "");
-            tr.innerHTML = '<th colspan=5><h2>' + header + '</h2>';
+            tr.innerHTML = '<th colspan=7><h2>' + header + '</h2>';
             table.appendChild(tr);
         }
 
@@ -549,20 +554,16 @@ function build_ui_area() {
                        '<td>' + make_player_link(game[1]) + '</td>' +
                        '<td>Bana ' + (game[6] || "?") + '</td>' +
                        '<td>' + (game[5] || "") + '<td>' +
-                       '<td><input class="p1" size=2 value="' + game[2] + '"></td>' +
+                       '<td>' + build_select('p1') + '</td>' +
                        '</td><td>' +
-                       '<td><input class="p2" size=2 value="' + game[3] + '"></td>';
+                       '<td>' + build_select('p2') + '</td>';
 
-        tr.querySelector('input.p1').onfocus = function () {
-            selectInputText(this);
-        };
+        tr.querySelector('select.p1').value = game[2];
+        tr.querySelector('select.p2').value = game[3];
 
-        tr.querySelector('input.p2').onfocus = function () {
-            selectInputText(this);
-        };
-
-        tr.querySelector('input.p1').onchange = function () {
-            var gameidx = this.parentNode.parentNode.getAttribute("data-game-idx");
+        tr.querySelector('select.p1').onchange = function () {
+            var td = this.parentNode;
+            var gameidx = td.parentNode.getAttribute("data-game-idx");
             if (this.value == 'W')
                 round.games[gameidx][2] = 'W';
             else if (this.value == '-')
@@ -577,8 +578,9 @@ function build_ui_area() {
             save();
         };
 
-        tr.querySelector('input.p2').onchange = function () {
-            var gameidx = this.parentNode.parentNode.getAttribute("data-game-idx");
+        tr.querySelector('select.p2').onchange = function () {
+            var td = this.parentNode;
+            var gameidx = td.parentNode.getAttribute("data-game-idx");
             if (this.value == 'W')
                 round.games[gameidx][3] = 'W';
             else if (this.value == '-')
