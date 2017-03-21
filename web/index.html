@@ -314,9 +314,9 @@ function save() {
     req("save.cgi",
         function() {
             if (this.readyState == 4 && this.status == 200) {
-                var response = json.parse(this.responseText);
-                if (response)
-                    currenthash = this.response[0];
+                var response = JSON.parse(this.responseText);
+                if (response && response.length > 0)
+                    currenthash = response[0];
                 else
                     errorblock.innerHTML = "Kunde inte spara!";
             }
