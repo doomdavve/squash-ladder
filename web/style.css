@@ -80,14 +80,6 @@ input[type=button] {
     margin: 0 auto;
     padding: 0.4em;
 }
-td input {
-    text-align: right;
-    border: 1px dashed lightgrey;
-    padding: 0.2em;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
 .downloadcsv {
     margin: 1em;
     float: left;
