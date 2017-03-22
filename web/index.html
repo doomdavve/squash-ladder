@@ -308,17 +308,21 @@ var currenthash = ""; // current object we're working on
 var parenthash = "";
 var round = {};
 
-function save() {
+function save(tr) {
     if (!division_name)
         return;
+    tr.querySelector("td:last-child").textContent = '';
     req("save.cgi",
         function() {
             if (this.readyState == 4 && this.status == 200) {
                 var response = JSON.parse(this.responseText);
-                if (response && response.length > 0)
+                if (response && response.length > 0) {
                     currenthash = response[0];
-                else
+                    tr.querySelector("td:last-child").textContent = '✔';
+                } else {
+                    tr.querySelector("td:last-child").textContent = '!';
                     errorblock.innerHTML = "Kunde inte spara!";
+                }
             }
         }, "division=" + encodeURIComponent(division_name) + "&parent=" +
            encodeURIComponent(currenthash) + "&data=" + encodeURIComponent(JSON.stringify(round)));
@@ -533,6 +537,25 @@ function build_select(classname) {
            '><option>-<option>0<option>1<option>2<option>3<option>W</select>';
 }
 
+function make_onchange_func(colidx) {
+    return function() {
+        var td = this.parentNode;
+        var gameidx = td.parentNode.getAttribute("data-game-idx");
+        if (this.value == 'W')
+            round.games[gameidx][colidx] = 'W';
+        else if (this.value == '-')
+            round.games[gameidx][colidx] = '-';
+        else {
+            round.games[gameidx][colidx] = parseInt(this.value);
+            if (isNaN(round.games[gameidx][colidx]))
+                this.value = round.games[gameidx][colidx] = '-';
+        }
+
+        build_scoreboard();
+        save(td.parentNode);
+    }
+}
+
 function build_ui_area() {
     var uiarea = document.querySelector('.uiarea');
     uiarea.innerHTML = '';
@@ -543,57 +566,27 @@ function build_ui_area() {
         if (i % 3 == 0) {
             var tr = document.createElement('tr');
             var header = (game[4] || "");
-            tr.innerHTML = '<th colspan=7><h2>' + header + '</h2>';
+            tr.innerHTML = '<th colspan=8><h2>' + header + '</h2>';
             table.appendChild(tr);
         }
 
         var tr = document.createElement('tr');
         tr.setAttribute("data-game-idx", i);
 
-        tr.innerHTML = '<td>' + make_player_link(game[0]) + '</td>' +
-                       '<td>' + make_player_link(game[1]) + '</td>' +
-                       '<td>Bana ' + (game[6] || "?") + '</td>' +
-                       '<td>' + (game[5] || "") + '<td>' +
-                       '<td>' + build_select('p1') + '</td>' +
-                       '</td><td>' +
-                       '<td>' + build_select('p2') + '</td>';
+        tr.innerHTML = '<td>' + make_player_link(game[0]) +
+                       '<td>' + make_player_link(game[1]) +
+                       '<td>Bana ' + (game[6] || "?") +
+                       '<td>' + (game[5] || "") +
+                       '<td>' + build_select('p1') +
+                       '<td>' + build_select('p2') +
+                       '<td>'; // last col for save check mark.
 
         tr.querySelector('select.p1').value = game[2];
         tr.querySelector('select.p2').value = game[3];
 
-        tr.querySelector('select.p1').onchange = function () {
-            var td = this.parentNode;
-            var gameidx = td.parentNode.getAttribute("data-game-idx");
-            if (this.value == 'W')
-                round.games[gameidx][2] = 'W';
-            else if (this.value == '-')
-                round.games[gameidx][2] = '-';
-            else {
-                round.games[gameidx][2] = parseInt(this.value);
-                if (isNaN(round.games[gameidx][2]))
-                    this.value = round.games[gameidx][2] = '-';
-            }
+        tr.querySelector('select.p1').onchange = make_onchange_func(2);
+        tr.querySelector('select.p2').onchange = make_onchange_func(3);
 
-            build_scoreboard();
-            save();
-        };
-
-        tr.querySelector('select.p2').onchange = function () {
-            var td = this.parentNode;
-            var gameidx = td.parentNode.getAttribute("data-game-idx");
-            if (this.value == 'W')
-                round.games[gameidx][3] = 'W';
-            else if (this.value == '-')
-                round.games[gameidx][3] = '-';
-            else {
-                round.games[gameidx][3] = parseInt(this.value);
-                if (isNaN(round.games[gameidx][3]))
-                    this.value = round.games[gameidx][3] = '-';
-            }
-
-            build_scoreboard();
-            save();
-        };
         table.appendChild(tr);
     });
     uiarea.appendChild(table);
