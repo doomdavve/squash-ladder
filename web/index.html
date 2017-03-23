@@ -537,7 +537,7 @@ function build_select(classname) {
            '><option>-<option>0<option>1<option>2<option>3<option>W</select>';
 }
 
-function make_onchange_func(colidx) {
+function make_onchange_func(colidx, othercolidx) {
     return function() {
         var tr = this.parentNode.parentNode;
         var gameidx = tr.getAttribute("data-game-idx");
@@ -551,8 +551,11 @@ function make_onchange_func(colidx) {
                 this.value = round.games[gameidx][colidx] = '-';
         }
 
-        build_scoreboard();
-        save(tr);
+        if (round.games[gameidx][colidx] != '-' &&
+            round.games[gameidx][othercolidx] != '-') {
+            build_scoreboard();
+            save(tr);
+        }
     }
 }
 
@@ -584,8 +587,8 @@ function build_ui_area() {
         tr.querySelector('select.p1').value = game[2];
         tr.querySelector('select.p2').value = game[3];
 
-        tr.querySelector('select.p1').onchange = make_onchange_func(2);
-        tr.querySelector('select.p2').onchange = make_onchange_func(3);
+        tr.querySelector('select.p1').onchange = make_onchange_func(2, 3);
+        tr.querySelector('select.p2').onchange = make_onchange_func(3, 2);
 
         table.appendChild(tr);
     });

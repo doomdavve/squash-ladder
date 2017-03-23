@@ -31,8 +31,7 @@ table h2 {
 }
 td, th {
     text-align: left;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
+    line-height: 2em;
 }
 #results h1 {
     text-align: center;
@@ -92,11 +91,17 @@ input.p1, input.p2 {
 .uiarea h2 {
     text-align: center;
 }
+
 @media only screen
 and (max-device-width : 667px) {
     .uiarea td:nth-child(3) { display: none; }
     .uiarea td:nth-child(4) { display: none; }
 }
+
+.uiarea td:nth-child(7) {
+    width: 1em;
+}
+
 .dump {
     margin: 1em;
     float: right;
