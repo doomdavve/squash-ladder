@@ -33,9 +33,13 @@ with cd(".."):
     writer = csv.writer(output)
     writer.writerow(["season","round","division","date","time","court","player1","player2","result1","result2"])
 
-    divisions = [ "{}-{:02d}-{:02d}".format(season, round, x) for x in range(1,25)]
+    divisions = [ "{}-{:02d}-{:02d}".format(season, round, x) for x in range(1,30)] # max is 29 divisions
     for i, division in enumerate(divisions):
-        f = open(os.path.join("data", "divisions", division), "r")
+        fn = os.path.join("data", "divisions", division)
+        if not os.path.exists(fn):
+            continue
+
+        f = open(fn, "r")
         head = f.read()
         f.close()
 
