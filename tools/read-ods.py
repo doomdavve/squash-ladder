@@ -149,7 +149,7 @@ def main_new(args, current_book, new_book, i, ctx):
 
 def main_update(args, current_book, new_book, i, ctx):
     league = "L"+str(i)
-    division_name = make_division_name(i)
+    division_name = make_division_name(args, i)
     url = "{}/load.cgi?division={}".format(args.url, division_name)
     response = urllib2.urlopen(url)
     d = json.load(response)
@@ -175,7 +175,7 @@ def main_update(args, current_book, new_book, i, ctx):
 
 def main_reset(args, current_book, new_book, i, ctx):
     league = "L"+str(i)
-    division_name = make_division_name(i)
+    division_name = make_division_name(args, i)
     url = "{}/load.cgi?division={}".format(args.url, division_name)
     print "Loading URL {}".format(url)
     response = urllib2.urlopen(url)
@@ -202,6 +202,8 @@ def init_export(args, current_book, new_book, ctx):
     ctx["writer"].writerow(["season","round","division","date","time","court","player1","player2","result1","result2"])
 
 def main_export(args, current_book, new_book, i, ctx):
+    """ Note export doesn't export exactly work since the matches aren't
+        correct in the .ods file. """
     league = "L"+str(i)
     matches = extract_matches(current_book, league)['games']
     for result in extract_results(new_book, league):
@@ -220,6 +222,7 @@ def main_export(args, current_book, new_book, i, ctx):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--divisions", required=True, type=int)
     parser.add_argument("--season", required=True, type=str)
     parser.add_argument("--round", required=True, type=int)
     parser.add_argument("--current-file", required=True, type=str)
@@ -256,7 +259,7 @@ def main():
 
     if hasattr(args, 'init'):
         args.init(args, current_book, new_book, ctx)
-    for i in range(1,25):
+    for i in range(1, args.divisions+1):
         args.func(args, current_book, new_book, i, ctx)
 
 if __name__ == "__main__":
