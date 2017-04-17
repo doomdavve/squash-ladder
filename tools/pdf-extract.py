@@ -272,7 +272,7 @@ for i, page in enumerate(PDFPage.create_pages(document)):
 
         req = urllib2.Request("{}/save.cgi".format(args.url), data)
         response = urllib2.urlopen(req)
-        print "Saved: %s" % response.read()
+        print "Saved: %s" % json.load(response)
     else:
         sha1 = data[0]
         parent = data[1]
@@ -298,4 +298,4 @@ for i, page in enumerate(PDFPage.create_pages(document)):
             data = urllib.urlencode(values)
             req = urllib2.Request("{}/save.cgi".format(args.url), data)
             response = urllib2.urlopen(req)
-            print "Saved: %s" % response.read().strip()
+            print "Saved: %r" % json.load(response)
