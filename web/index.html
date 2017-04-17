@@ -155,7 +155,7 @@ function make_player_link(player) {
 
 function addResults(results, scoreboard) {
     var h1 = document.createElement('h1');
-    h1.textContent = scoreboard.shift();
+    h1.innerHTML = scoreboard.shift();
     results.appendChild(h1);
 
     var table = document.createElement('table');
@@ -288,7 +288,8 @@ function computeResults(round) {
 
     var namearr = parse_division_name(division_name);
     if (namearr)
-        arr.unshift(namearr[0].replace("-", "/") + "(" + parseInt(namearr[1]) + "): Div " + namearr[2]);
+        arr.unshift("Division " + parseInt(namearr[2]) + " <br>Omgång " + parseInt(namearr[1]) +
+                    " &bull; " + namearr[0].replace("-", "/"));
 
     return arr;
 }
