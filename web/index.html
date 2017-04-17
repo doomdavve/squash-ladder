@@ -160,7 +160,7 @@ function addResults(results, scoreboard) {
 
     var table = document.createElement('table');
     table.id = "results";
-    var tablestring = "<tr><th title=\"Namn\">Namn<th title=\"Spelade\">S<th title=\"Vunna\">V<th title=\"Förlorade\">F<th title=\"Poäng\">P";
+    var tablestring = "<tr><th title=\"Namn\">Spelare<th title=\"Spelade\">S<th title=\"Vunna\">V<th title=\"Förlorade\">F<th title=\"Poäng\">P";
     for (var i=0; i<scoreboard.length; i++) {
         var score = scoreboard[i];
         tablestring += "<tr><td>" + make_player_link(score[0]) + "<td>" + score.slice(1).join("<td>");
