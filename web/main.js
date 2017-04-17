@@ -46,9 +46,6 @@ var csv = function() {
             var end_minutes = ("00" + (end_date.getMinutes().toString())).slice(-2);
             var end_seconds = ("00" + (end_date.getSeconds().toString())).slice(-2);
 
-            var start = start_year + start_month + start_day + start_time;
-            var end = end_year + end_month + end_day + end_time;
-
             var start_time = [ start_hours, start_minutes, start_seconds ].join(':');
             var end_time = [ end_hours, end_minutes, end_seconds ].join(':');
 
@@ -86,12 +83,6 @@ var csv = function() {
 
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
-function selectInputText(input) {
-    requestAnimationFrame(function() {
-        input.setSelectionRange(0, input.value.length);
-    });
 }
 
 function req(url, fun, params) {
@@ -157,7 +148,7 @@ function computeResults(round) {
 
     // Score played matches into results.
 
-    for (var i=0; i<round.games.length; i++) {
+    for (i=0; i<round.games.length; i++) {
         var game = round.games[i];
         if (game.length < 4)
             throw "Match med för få fält";
@@ -233,7 +224,6 @@ function computeResults(round) {
                     return result2 - result1;
             }
             // No played match between them. What to do? FIXME: Count games.
-            console.log("Warning: could not break tie between " + a[0] + " and " + b[0] + ".");
             return Math.random() - 0.5;
         } else {
             return points2 - points1;
@@ -260,7 +250,6 @@ if (admin)
     document.querySelector('.admin').style.display = 'block';
 
 var currenthash = ""; // current object we're working on
-var parenthash = "";
 var round = {};
 
 function save(tr) {
@@ -346,7 +335,7 @@ function update_list() {
                     }
                 }
 
-                for (var i=0; i<Object.keys(years).length; i++) {
+                for (i=0; i<Object.keys(years).length; i++) {
                     var year = Object.keys(years)[i];
                     yearselect.add(option(year, requested_year));
                 }
@@ -366,11 +355,11 @@ function update_list() {
                     opt.value = '---';
                     select.add(opt);
 
-                    for (var i=0; i<Object.keys(years).length; i++) {
+                    for (i=0; i<Object.keys(years).length; i++) {
                         var season = Object.keys(years)[i];
                         for (var j=0; j<Object.keys(years[season]).length; j++) {
                             var round = Object.keys(years[season])[j];
-                            var opt = document.createElement('option');
+                            opt = document.createElement('option');
                             opt.textContent = season + " | " + round;
                             opt.value = season + "," + round;
                             select.add(opt);
@@ -528,7 +517,7 @@ function build_ui_area() {
             table.appendChild(tr);
         }
 
-        var tr = document.createElement('tr');
+        tr = document.createElement('tr');
         tr.setAttribute("data-game-idx", i);
 
         tr.innerHTML = '<td>' + make_player_link(game[0]) +
@@ -567,7 +556,7 @@ function build_ui_area() {
         if (player == "---")
             return;
         var cal = csv();
-        round.games.forEach(function(game, i) {
+        round.games.forEach(function(game) {
             if (game[0] == player || game[1] == player) {
                 var date = game[4].replace("-", "/");
                 var begin = new Date(date + " " + game[5] + ":00");
@@ -588,7 +577,7 @@ function build_ui_area() {
 yearselect.onchange = update_roundnr;
 roundselect.onchange = update_divisionnr;
 divisionselect.onchange = update_round;
-onhashchange = update_division_name_from_hash;
+window.onhashchange = update_division_name_from_hash;
 
 update_division_name_from_hash();
 update_list();
