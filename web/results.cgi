@@ -23,15 +23,35 @@ class cd:
     def __exit__(self, etype, value, traceback):
         os.chdir(self.savedPath)
 
+def chris_woify(r):
+    if r == 'W':
+        return 'WO'
+    elif r == '-':
+        return '0'
+    else:
+        return r
+
 with cd(".."):
 
     form = cgi.FieldStorage()
     season = form.getvalue('season')
     round = int(form.getvalue('round'))
+    format = form.getvalue('format')
+    delimiter = ','
+
+    if not format:
+        format = 'default'
+
+    if format == 'chris':
+        delimiter = ';'
 
     output = StringIO.StringIO()
-    writer = csv.writer(output)
-    writer.writerow(["season","round","division","date","time","court","player1","player2","result1","result2"])
+    writer = csv.writer(output, delimiter=delimiter)
+
+    if (format == 'chris'):
+        writer.writerow(["Player/Team 1","Player/Team 2","Result","Match date","Comment"])
+    else:
+        writer.writerow(["season","round","division","date","time","court","player1","player2","result1","result2"])
 
     divisions = [ "{}-{:02d}-{:02d}".format(season, round, x) for x in range(1,30)] # max is 29 divisions
     for i, division in enumerate(divisions):
@@ -49,9 +69,17 @@ with cd(".."):
             ip = f.readline().strip()
             data = json.load(f)
             for game in data['games']:
-                writer.writerow([ season, round, i+1, game[4], game[5], game[6],
-                                  game[0].encode('utf-8'), game[1].encode('utf-8'),
-                                  game[2], game[3]])
+                if (format == 'chris'):
+                    writer.writerow([
+                        game[0].encode('utf-8'), game[1].encode('utf-8'),
+                        "{}-{}".format(chris_woify(game[2]), chris_woify(game[3])),
+                        "{} {}".format(game[4], game[5]),
+                        "Bana {}".format(game[6])])
+                else:
+                    writer.writerow([
+                        season, round, i+1, game[4], game[5], game[6],
+                        game[0].encode('utf-8'), game[1].encode('utf-8'),
+                        game[2], game[3]])
 
     sys.stdout.write("Content-type: text/csv\n")
     sys.stdout.write("Content-disposition: attachment; filename=Squash_league_results-{}-{:02d}.csv\n\n".format(season, round))

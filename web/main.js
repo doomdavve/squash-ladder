@@ -385,7 +385,7 @@ function update_list() {
                             a.click();
                             window.URL.revokeObjectURL(url);
                         };
-                        xhr.send('season=' + arr[0] + '&round=' + arr[1]);
+                        xhr.send('format=chris&season=' + arr[0] + '&round=' + arr[1]);
                     }
                     resultsroot.appendChild(select);
                 }
