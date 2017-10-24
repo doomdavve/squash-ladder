@@ -149,6 +149,7 @@ class PageState(object):
         # telephone number:
         self.ignored_tokens_with_coord = [
             [ ".*", [57, 329] ], # Sista datum for uppskjutna matcher
+            [ ".*", [39, 329] ], # datum
             [ ".*", [134, 307] ], # datum
         ]
         self.scanning_results = {}
@@ -202,6 +203,10 @@ class PageState(object):
                 #print "* %d" % i
                 hp = homeplayer.encode('utf-8')
                 ap = awayplayers[i].encode('utf-8')
+                if (hp == "Mattias Anthyme Grah"):
+                    hp = "Mattias Anthyme Grahn"
+                if (ap == "Mattias Anthyme Grah"):
+                    ap = "Mattias Anthyme Grahn"
                 m = re.match("Tid : (\d\d:\d\d), Bana : (\d)", gameinfo[i].encode('utf-8'))
                 if (m):
                     gametime = m.group(1)
