@@ -35,4 +35,4 @@ running the web server, e.g. `www-data` on Debian based systems.
 Other web servers should be configured correspondingly.
 
 After restarting your server, you may then navigate your browser to
-https://<hostname>/squash to browser the site.
+`https://<hostname>/squash` to browser the site.
