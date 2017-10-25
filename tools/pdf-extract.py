@@ -192,7 +192,6 @@ class PageState(object):
         players = set()
         games = []
         for gamenr in range(1,6):
-            #print gamenr
             gamedate = self.scanning_results["SPELDATUM_%d_REDUNDANT" % gamenr].split("\n")[0]
             homeplayers = self.scanning_results["SPELARE_HEMMA_%d" % gamenr].split("\n")[0:3]
             awayplayers = self.scanning_results["SPELARE_BORTA_%d" % gamenr].split("\n")[0:3]
@@ -200,13 +199,8 @@ class PageState(object):
             gametime = "??:??"
             gamecourse = "?"
             for i, homeplayer in enumerate(homeplayers):
-                #print "* %d" % i
                 hp = homeplayer.encode('utf-8')
                 ap = awayplayers[i].encode('utf-8')
-                if (hp == "Mattias Anthyme Grah"):
-                    hp = "Mattias Anthyme Grahn"
-                if (ap == "Mattias Anthyme Grah"):
-                    ap = "Mattias Anthyme Grahn"
                 m = re.match("Tid : (\d\d:\d\d), Bana : (\d)", gameinfo[i].encode('utf-8'))
                 if (m):
                     gametime = m.group(1)
@@ -215,8 +209,19 @@ class PageState(object):
                 players.add(hp)
                 players.add(ap)
 
-#        if len(players) != 6:
-#            raise Exception("Wrong number of players: {}".format(len(players), players))
+        if len(players) != 6:
+            players_to_remove = set()
+            for player in players:
+                for longer_name_candidate in players:
+                    if (longer_name_candidate.startswith(player)
+                        and len(longer_name_candidate) == len(player) + 1):
+                        for game in games:
+                            game[0] = re.sub(player + '$', longer_name_candidate, game[0])
+                            game[1] = re.sub(player + '$', longer_name_candidate, game[1])
+                        players_to_remove.add(player)
+            players = players - players_to_remove
+        if len(players) != 6:
+            raise Exception("Wrong number of players: {}".format(len(players), players))
 
         out["games"] = games
         out["players"] = list(players)

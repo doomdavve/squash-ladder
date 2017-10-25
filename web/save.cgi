@@ -12,6 +12,7 @@ import sys
 print "Content-type: application/json"
 print "\n\n"
 
+data_dir = os.getenv("DATADIR", "../data")
 form = cgi.FieldStorage()
 division = form.getvalue('division')
 
@@ -27,7 +28,7 @@ if (not assumedparent):
 assumedparent.strip()
 
 try:
-    f = open(os.path.join("..", "data", "divisions", division), "r")
+    f = open(os.path.join(data_dir, "divisions", division), "r")
     parent = f.read().strip()
     f.close()
 except IOError as e:
@@ -46,10 +47,10 @@ if (parent == assumedparent and form.getvalue('data')):
     dataToDisk = False
 
     try:
-        with gzip.open(os.path.join("..", "data", "objects", hashedname), "wb") as cf:
+        with gzip.open(os.path.join(data_dir, "objects", hashedname), "wb") as cf:
             cf.write(commit)
 
-            with open(os.path.join("..", "data", "divisions", division), "w") as hf:
+            with open(os.path.join(data_dir, "divisions", division), "w") as hf:
                 hf.write(hashedname)
                 dataToDisk = True
 

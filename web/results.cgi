@@ -31,7 +31,8 @@ def chris_woify(r):
     else:
         return r
 
-with cd(".."):
+data_dir = os.getenv("DATADIR", "../data")
+with cd(data_dir):
 
     form = cgi.FieldStorage()
     season = form.getvalue('season')
@@ -55,7 +56,7 @@ with cd(".."):
 
     divisions = [ "{}-{:02d}-{:02d}".format(season, round, x) for x in range(1,30)] # max is 29 divisions
     for i, division in enumerate(divisions):
-        fn = os.path.join("data", "divisions", division)
+        fn = os.path.join("divisions", division)
         if not os.path.exists(fn):
             continue
 
@@ -63,7 +64,7 @@ with cd(".."):
         head = f.read()
         f.close()
 
-        with gzip.open(os.path.join("data", "objects", head), "r") as f:
+        with gzip.open(os.path.join("objects", head), "r") as f:
             parent = f.readline().strip()
             date = f.readline().strip()
             ip = f.readline().strip()

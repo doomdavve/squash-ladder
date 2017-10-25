@@ -12,6 +12,7 @@ import urllib
 print "Content-type: application/json"
 print "\n\n"
 
+data_dir = os.getenv("DATADIR", "../data")
 form = cgi.FieldStorage()
 division = form.getvalue('division')
 player = unicode(urllib.unquote(form.getvalue('player')), 'utf-8') if not division else None
@@ -20,17 +21,17 @@ division = "test" if not division else division
 
 if player:
     division_regex = re.compile(r'\d\d\d\d-\d\d\d\d-\d\d-\d\d')
-    divisions = filter(lambda x: re.match(division_regex, x), os.listdir("../data/divisions"))
+    divisions = filter(lambda x: re.match(division_regex, x), os.listdir(os.path.join(data_dir, "divisions")))
     divisions.sort()
 
     hits = []
 
     for division in divisions:
-        f = open(os.path.join("..", "data", "divisions", division), "r")
+        f = open(os.path.join(data_dir, "divisions", division), "r")
         head = f.read()
         f.close()
 
-        with gzip.open(os.path.join("..", "data", "objects", head), "r") as f:
+        with gzip.open(os.path.join(data_dir, "objects", head), "r") as f:
             parent = f.readline().strip()
             date = f.readline().strip()
             ip = f.readline().strip()
@@ -43,11 +44,11 @@ if player:
 
 else:
     try:
-        f = open(os.path.join("..", "data", "divisions", division), "r")
+        f = open(os.path.join(data_dir, "divisions", division), "r")
         head = f.read()
         f.close()
 
-        with gzip.open(os.path.join("..", "data", "objects", head), "r") as f:
+        with gzip.open(os.path.join(data_dir, "objects", head), "r") as f:
             parent = f.readline().strip()
             date = f.readline().strip()
             ip = f.readline().strip()

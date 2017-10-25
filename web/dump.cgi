@@ -18,10 +18,11 @@ class cd:
     def __exit__(self, etype, value, traceback):
         os.chdir(self.savedPath)
 
-with cd(".."):
+data_dir = os.getenv("DATADIR", "../data")
+with cd(data_dir):
     with io.BytesIO() as zip_file:
         with zipfile.ZipFile(zip_file, 'a', zipfile.ZIP_DEFLATED, False) as zip:
-            for root, dirs, files in os.walk("data/"):
+            for root, dirs, files in os.walk("./"):
                 for file in files:
                     zip.write(os.path.join(root, file))
 

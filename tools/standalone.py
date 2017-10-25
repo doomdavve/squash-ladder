@@ -2,12 +2,12 @@
 
 import BaseHTTPServer
 import CGIHTTPServer
-import cgitb; cgitb.enable()  ## This line enables CGI error reporting
+import cgitb;
 import os
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--datadir", help="Path to data directory.")
+parser.add_argument("--datadir", required=True, help="Path to data directory.")
 args = parser.parse_args()
 
 os.environ["DATADIR"] = "data"
